@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio | Gestión de Clientes{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h2>Hello World demo</h2>
+    <p>El proyecto Django está funcionando correctamente.</p>
+
+
+
+    {% if user.is_authenticated %}
+        <p>Has iniciado sesión como <strong>{{ user.username }}</strong>.</p>
+    {% else %}
+        <p><a href="{% url 'login' %}">Inicia sesión</a> para acceder al sistema.</p>
+    {% endif %}
+
+
+    
+</section>
+{% endblock %}
