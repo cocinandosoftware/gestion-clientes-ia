@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes | Plataforma inteligente</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+    <header class="home-header">
+        <div class="home-container home-header__inner">
+            <a href="{% url 'home' %}" class="home-logo">Gestión de Clientes</a>
+            <nav class="home-nav">
+                <a href="#funcionalidades">Funcionalidades</a>
+                <a href="#vision">Visión</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'private_welcome' %}" class="home-btn home-btn--primary">Área privada</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="home-btn home-btn--primary">Iniciar sesión</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="home-hero">
+            <div class="home-container home-hero__grid">
+                <div class="home-hero__content">
+                    <p class="home-eyebrow">Cocinando Software</p>
+                    <h1>Gestiona clientes y prepara tu negocio para la era de la IA</h1>
+                    <p class="home-hero__lead">
+                        Plataforma privada para centralizar la información de clientes y evolucionar
+                        hacia presupuestos asistidos por inteligencia artificial a partir de
+                        instrucciones en lenguaje natural.
+                    </p>
+                    <div class="home-hero__actions">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'private_welcome' %}" class="home-btn home-btn--primary home-btn--large">
+                                Ir al área privada
+                            </a>
+                            <span class="home-hero__welcome">Hola, {{ user.username }}</span>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="home-btn home-btn--primary home-btn--large">
+                                Acceder a la plataforma
+                            </a>
+                            <a href="#funcionalidades" class="home-btn home-btn--ghost home-btn--large">
+                                Descubrir más
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="home-hero__panel">
+                    <div class="home-stat">
+                        <span class="home-stat__value">01</span>
+                        <p class="home-stat__label">Base sólida de clientes</p>
+                    </div>
+                    <div class="home-stat">
+                        <span class="home-stat__value">02</span>
+                        <p class="home-stat__label">Presupuestos estructurados</p>
+                    </div>
+                    <div class="home-stat">
+                        <span class="home-stat__value">03</span>
+                        <p class="home-stat__label">Asistencia inteligente</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="funcionalidades" class="home-section">
+            <div class="home-container">
+                <div class="home-section__header">
+                    <p class="home-eyebrow">Funcionalidades</p>
+                    <h2>Todo lo necesario para organizar tu operativa comercial</h2>
+                </div>
+                <div class="home-features">
+                    <article class="home-feature">
+                        <h3>Gestión de clientes</h3>
+                        <p>
+                            Registra, consulta y mantiene actualizada la información de contacto,
+                            empresa y notas de cada cliente desde un panel claro y accesible.
+                        </p>
+                    </article>
+                    <article class="home-feature">
+                        <h3>Presupuestos asociados</h3>
+                        <p>
+                            Prepara el terreno para vincular presupuestos completos a cada cliente,
+                            con persistencia estructurada y trazabilidad de cada operación.
+                        </p>
+                    </article>
+                    <article class="home-feature">
+                        <h3>Escandallos y cocinas</h3>
+                        <p>
+                            Diseñado para evolucionar hacia la gestión de escandallos por cocina,
+                            con validación estructural y selección guiada de productos por familia.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="vision" class="home-section home-section--alt">
+            <div class="home-container home-vision">
+                <div class="home-vision__content">
+                    <p class="home-eyebrow">Visión del proyecto</p>
+                    <h2>De la gestión manual a la acción asistida por IA</h2>
+                    <p>
+                        El objetivo final es interpretar instrucciones en lenguaje natural, identificar
+                        las acciones necesarias y ejecutarlas dentro del sistema: validar clientes,
+                        crear presupuestos y generar escandallos con control humano en cada paso crítico.
+                    </p>
+                    <ul class="home-vision__list">
+                        <li>Interpretación de prompts y function calling</li>
+                        <li>Alta automática de clientes cuando sea necesario</li>
+                        <li>Generación asistida de presupuestos y documentación</li>
+                    </ul>
+                </div>
+                <aside class="home-vision__card">
+                    <p class="home-vision__card-title">Área privada segura</p>
+                    <p>
+                        El acceso al sistema está protegido. Solo usuarios autenticados pueden
+                        operar sobre la información del negocio.
+                    </p>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'private_welcome' %}" class="home-btn home-btn--primary home-btn--block">
+                            Entrar al panel
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="home-btn home-btn--primary home-btn--block">
+                            Iniciar sesión
+                        </a>
+                    {% endif %}
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <footer class="home-footer">
+        <div class="home-container home-footer__inner">
+            <p>Gestión de Clientes · Proyecto formativo Cocinando Software</p>
+            <a href="{% url 'login' %}">Acceso privado</a>
+        </div>
+    </footer>
+</body>
+</html>
