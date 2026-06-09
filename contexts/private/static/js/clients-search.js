@@ -180,7 +180,41 @@ function bindClientSearchForm(listSection) {
     });
 }
 
+function reloadClientList() {
+    const listSection = document.getElementById('clients-list');
+    const searchForm = document.getElementById('client-search-form');
+    const searchUrl = listSection?.dataset.searchUrl;
+    const submitButton = document.getElementById('client-search-submit');
+
+    if (!listSection || !searchForm || !searchUrl) {
+        return;
+    }
+
+    return loadClients(listSection, searchForm, searchUrl, submitButton);
+}
+
+window.reloadClientList = reloadClientList;
+
+function bindNewClientButton() {
+    const newButton = document.getElementById('client-new-button');
+
+    if (!newButton) {
+        return;
+    }
+
+    newButton.addEventListener('click', function () {
+        const createUrl = newButton.dataset.createUrl;
+
+        if (!createUrl) {
+            return;
+        }
+
+        window.open(createUrl, '_blank');
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const listSection = document.getElementById('clients-list');
     bindClientSearchForm(listSection);
+    bindNewClientButton();
 });

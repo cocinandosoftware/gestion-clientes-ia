@@ -1,0 +1,79 @@
+{% extends 'private/base_private.html' %}
+{% load static %}
+
+{% block title %}Nuevo cliente | Gestión de Clientes{% endblock %}
+
+{% block content %}
+<header class="private-page-header">
+    <h1>Nuevo cliente</h1>
+    <p>Completa todos los campos para registrar un nuevo cliente.</p>
+</header>
+
+<section class="private-card private-form-card">
+    <form
+        id="client-create-form"
+        class="private-form"
+        method="post"
+        action=""
+        data-create-url="{% url 'client_create_api' %}"
+    >
+        {% csrf_token %}
+
+        <div id="client-create-errors" class="private-form-errors" hidden></div>
+
+        <div class="private-form__grid">
+            <div class="private-form__field">
+                <label for="client-date">Fecha</label>
+                <input id="client-date" type="date" name="date" required>
+            </div>
+            <div class="private-form__field">
+                <label for="client-name">Nombre</label>
+                <input id="client-name" type="text" name="name" required>
+            </div>
+            <div class="private-form__field">
+                <label for="client-company">Razón social</label>
+                <input id="client-company" type="text" name="company_name" required>
+            </div>
+            <div class="private-form__field">
+                <label for="client-phone">Teléfono</label>
+                <input id="client-phone" type="text" name="phone" required>
+            </div>
+            <div class="private-form__field">
+                <label for="client-email">Email</label>
+                <input id="client-email" type="email" name="email" required>
+            </div>
+            <div class="private-form__field private-form__field--full">
+                <label for="client-address">Dirección</label>
+                <input id="client-address" type="text" name="address_line" required>
+            </div>
+            <div class="private-form__field">
+                <label for="client-city">Ciudad</label>
+                <input id="client-city" type="text" name="city" required>
+            </div>
+            <div class="private-form__field">
+                <label for="client-postal">Código postal</label>
+                <input id="client-postal" type="text" name="postal_code" required>
+            </div>
+            <div class="private-form__field">
+                <label for="client-province">Provincia</label>
+                <input id="client-province" type="text" name="province" required>
+            </div>
+            <div class="private-form__field private-form__field--full">
+                <label for="client-notes">Notas</label>
+                <textarea id="client-notes" name="notes" rows="4" required></textarea>
+            </div>
+        </div>
+
+        <div class="private-form__actions">
+            <a href="{% url 'client_list' %}" class="private-btn">Cancelar</a>
+            <button type="submit" class="private-btn private-btn--primary" id="client-create-submit">
+                Guardar cliente
+            </button>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/clients-create.js' %}"></script>
+{% endblock %}

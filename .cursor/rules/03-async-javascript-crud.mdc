@@ -1,0 +1,121 @@
+---
+description: Patrón async CRUD con JavaScript vanilla (listar, buscar, crear, editar, eliminar)
+alwaysApply: true
+---
+
+# JavaScript async y CRUD en el área privada
+
+## Principio
+
+Las operaciones del área privada (listar, buscar, crear, editar, eliminar) usan **HTML propio + JavaScript vanilla en archivos independientes + APIs JSON en Django**. No usar `FormView`, `CreateView`, `UpdateView` ni formularios Django en templates para el CRUD interactivo.
+
+Referencia implementada: módulo **Clientes** en `contexts/private/`.
+
+## Un archivo JS por operación
+
+| Operación | JavaScript | Vista backend |
+|-----------|------------|---------------|
+| Listar / buscar | `clients-search.js` | `clients_search.py` |
+| Crear | `clients-create.js` | `clients_create.py` |
+| Eliminar | `clients-delete.js` | `clients_delete.py` |
+| Editar (futuro) | `clients-edit.js` | `clients_edit.py` |
+
+Ubicación JS: `contexts/private/static/js/`
+Ubicación vistas: `contexts/private/views/` (un módulo por operación).
+
+## Patrón backend (Django)
+
+* Vista **página** (GET): solo renderiza template con estructura HTML, **sin datos precargados** en listados async.
+* Vista **API** (GET o POST): devuelve `JsonResponse`.
+* Decoradores: `@login_required`, `@require_GET` o `@require_POST`.
+* Eliminar y modificar: siempre **POST**, nunca GET.
+* Validación en backend (ej. `contexts/private/clients/validation.py`), aunque también valide JS.
+* Lógica de consultas compartida en módulos del dominio (ej. `clients/queries.py`).
+
+Ejemplo respuesta API listado/búsqueda:
+
+```json
+{ "success": true, "clients": [...], "has_filters": false }
+```
+
+Ejemplo respuesta API crear:
+
+```json
+{ "success": true, "redirect_url": "/private/clientes/" }
+```
+
+## Patrón listado + búsqueda
+
+1. Template con **filtros + tabla fija** (`thead` + `tbody` vacío). Sin `{% for %}` de registros.
+2. Al `DOMContentLoaded`, `loadClients()` hace `fetch` GET a la API de búsqueda.
+3. La API devuelve **JSON** (no HTML renderizado).
+4. JS genera las `<tr>` en el `tbody`.
+5. El submit del buscador llama a la misma `loadClients()`.
+6. Exponer `window.reloadClientList` para refrescar desde otras pestañas u operaciones.
+
+## Patrón eliminación
+
+1. Botón en cada fila con `data-delete-url` y `data-client-name`.
+2. `confirm()` nativo antes de eliminar.
+3. `fetch` POST con cabecera `X-CSRFToken`.
+4. Si OK: quitar la fila del DOM; si no quedan filas, mostrar mensaje vacío.
+5. Tras insertar HTML nuevo (búsqueda), **re-enlazar** listeners de eliminar.
+
+## Patrón creación en pestaña nueva
+
+1. En el listado, botón **Nuevo** que abre con `window.open(url, '_blank')`. **No** usar `<a target="_blank" rel="noopener">` (rompe `window.opener`).
+2. Página de formulario: HTML manual + `clients-create.js`.
+3. Validación JS de campos obligatorios antes del `fetch`.
+4. `fetch` POST con `FormData` + CSRF.
+5. Si OK en pestaña hija:
+   - `window.opener.reloadClientList()` o `opener.location.reload()`
+   - `window.opener.focus()`
+   - `window.close()`
+6. Si no hay `opener`, redirigir en la misma pestaña.
+
+## Loader pantalla completa
+
+* Overlay `position: fixed` con opacidad (`private-loader-overlay`).
+* Mostrar antes del `fetch`; ocultar en `finally`.
+* CSS obligatorio: `.private-loader-overlay[hidden] { display: none !important; }` (evita conflicto con `display: flex`).
+* Bloquear scroll del body con clase `private-loader-active` mientras carga.
+
+## Fetch y CSRF
+
+```javascript
+headers: {
+    'X-CSRFToken': getCsrfToken(),
+    'X-Requested-With': 'XMLHttpRequest',
+}
+```
+
+Lectura del token desde la cookie `csrftoken`.
+
+## URLs (convención)
+
+```
+/private/clientes/              → listado (HTML)
+/private/clientes/buscar/       → API GET búsqueda
+/private/clientes/nuevo/        → formulario crear (HTML)
+/private/clientes/crear/        → API POST crear
+/private/clientes/<id>/eliminar/ → API POST eliminar
+```
+
+Para **editar** (futuro): `/nuevo/` + `/crear/` se sustituyen por `/editar/` + `/actualizar/` con el mismo patrón.
+
+## Templates y estilos
+
+* Templates privados: `templates/private/` (listado, create, edit…).
+* CSS del área privada: `contexts/private/static/css/private.css`.
+* Cargar JS en `{% block extra_js %}` del template que lo necesita.
+* Orden de scripts: operaciones base (delete) antes de search si search re-enlaza delete.
+
+## Al añadir un nuevo CRUD o entidad
+
+Replicar la misma estructura:
+
+1. Modelo en `core/<entidad>/`.
+2. Vistas divididas en `contexts/private/views/<entidad>_*.py`.
+3. APIs JSON + templates HTML sin datos embebidos en listados.
+4. Un JS por operación async.
+5. Una fase por operación (listar → buscar → crear → editar → eliminar).

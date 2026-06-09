@@ -143,7 +143,7 @@ El desarrollo debe seguir este orden:
 
 * Añadir pequeñas mejoras progresivas.
 * No convertir la aplicación en SPA.
-* No sustituir el funcionamiento servidor por JavaScript si no es necesario.
+* En el **área privada**, el CRUD async sigue el patrón de `.cursor/rules/03-async-javascript-crud.mdc` (un JS por operación, APIs JSON, templates HTML propios).
 
 ### Fase 10: preparación para IA
 
