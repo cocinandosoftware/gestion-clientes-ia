@@ -1,4 +1,5 @@
 {% extends 'private/base_private.html' %}
+{% load static %}
 
 {% block title %}Clientes | Gestión de Clientes{% endblock %}
 
@@ -8,7 +9,11 @@
     <p>Listado de clientes registrados en el sistema.</p>
 </header>
 
-<section class="private-card">
+<section
+    class="private-card"
+    id="clients-list"
+    data-has-filters="{% if has_filters %}true{% else %}false{% endif %}"
+>
     <form class="private-search" method="get" action="">
         <div class="private-search__field">
             <label for="client-search">Buscar clientes</label>
@@ -44,7 +49,7 @@
     </form>
 
     {% if clients %}
-        <div class="private-table-wrap">
+        <div class="private-table-wrap" id="clients-table-wrap">
             <table class="private-table">
                 <thead>
                     <tr>
@@ -57,7 +62,7 @@
                         <th class="private-table__actions-head"></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="clients-table-body">
                     {% for client in clients %}
                         <tr>
                             <td>{{ client.name }}</td>
@@ -91,39 +96,25 @@
                             </td>
                             <td>{{ client.date|date:"d/m/Y" }}</td>
                             <td class="private-table__actions">
-                                <form
-                                    method="post"
-                                    action="{% url 'client_delete' client.pk %}"
-                                    onsubmit="return confirm('¿Eliminar a {{ client.name }}?');"
+                                <button
+                                    type="button"
+                                    class="private-btn-delete"
+                                    aria-label="Eliminar {{ client.name }}"
+                                    data-client-name="{{ client.name }}"
+                                    data-delete-url="{% url 'client_delete' client.pk %}"
                                 >
-                                    {% csrf_token %}
-                                    {% if search_query %}
-                                        <input type="hidden" name="q" value="{{ search_query }}">
-                                    {% endif %}
-                                    {% if date_from %}
-                                        <input type="hidden" name="date_from" value="{{ date_from }}">
-                                    {% endif %}
-                                    {% if date_until %}
-                                        <input type="hidden" name="date_until" value="{{ date_until }}">
-                                    {% endif %}
-                                    <button
-                                        type="submit"
-                                        class="private-btn-delete"
-                                        aria-label="Eliminar {{ client.name }}"
+                                    <svg
+                                        class="private-btn-delete__icon"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        aria-hidden="true"
                                     >
-                                        <svg
-                                            class="private-btn-delete__icon"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            aria-hidden="true"
-                                        >
-                                            <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/>
-                                            <path d="M10 11v6M14 11v6"/>
-                                        </svg>
-                                    </button>
-                                </form>
+                                        <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/>
+                                        <path d="M10 11v6M14 11v6"/>
+                                    </svg>
+                                </button>
                             </td>
                         </tr>
                     {% endfor %}
@@ -140,4 +131,8 @@
         </p>
     {% endif %}
 </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/clients.js' %}"></script>
 {% endblock %}

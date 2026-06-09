@@ -260,6 +260,15 @@ a {
     border-color: #f87171;
 }
 
+.private-btn-delete:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.private-btn-delete.is-loading {
+    opacity: 0.6;
+}
+
 .private-btn-delete__icon {
     width: 1.125rem;
     height: 1.125rem;

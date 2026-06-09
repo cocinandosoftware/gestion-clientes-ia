@@ -1,13 +1,11 @@
 from datetime import datetime
 
-from urllib.parse import urlencode
-
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.views.decorators.http import require_POST
 
-from config.views import page_not_found
 from core.clients.models import Client
 
 
@@ -27,7 +25,6 @@ def welcome_view(request):
 
 @login_required
 def client_list_view(request):
-    
     search_query = request.GET.get('q', '').strip()
     date_from = parse_date(request.GET.get('date_from', '').strip())
     date_until = parse_date(request.GET.get('date_until', '').strip())
@@ -65,30 +62,22 @@ def client_list_view(request):
     )
 
 
-def build_list_redirect_params(post_data):
-    params = {}
-    if post_data.get('q'):
-        params['q'] = post_data.get('q')
-    if post_data.get('date_from'):
-        params['date_from'] = post_data.get('date_from')
-    if post_data.get('date_until'):
-        params['date_until'] = post_data.get('date_until')
-    return params
-
-
 @login_required
+@require_POST
 def client_delete_view(request, client_id):
-    if request.method != 'POST':
-        return redirect('client_list')
-
+    
     try:
         client = Client.objects.get(pk=client_id)
     except Client.DoesNotExist:
-        return page_not_found(request)
+        return JsonResponse({
+            'success': False,
+            'errors': ['El cliente no existe o ya fue eliminado.'],
+        }, status=404)
 
+    client_name = client.name
     client.delete()
 
-    params = build_list_redirect_params(request.POST)
-    if params:
-        return redirect(f'{reverse("client_list")}?{urlencode(params)}')
-    return redirect('client_list')
+    return JsonResponse({
+        'success': True,
+        'message': f'Cliente "{client_name}" eliminado correctamente.',
+    })
