@@ -13,7 +13,7 @@ DEFAULT_JSON = (
     / 'clients_seed.json'
 )
 
-CLIENT_FIELDS = (
+TEXT_FIELDS = (
     'name',
     'company_name',
     'phone',
@@ -24,6 +24,8 @@ CLIENT_FIELDS = (
     'province',
     'notes',
 )
+
+DATE_FIELDS = ('date',)
 
 
 class Command(BaseCommand):
@@ -59,13 +61,21 @@ class Command(BaseCommand):
         created_count = 0
 
         for item in clients_data:
-            client_fields = {field: item.get(field, '') for field in CLIENT_FIELDS}
+            client_fields = {field: item.get(field, '') for field in TEXT_FIELDS}
 
-            if item.get('date'):
-                client_fields['date'] = datetime.strptime(item['date'], '%Y-%m-%d').date()
-
-            Client.objects.create(**client_fields)
-            created_count += 1
+            for field in DATE_FIELDS:
+                date_value = item.get(field)
+                if not date_value:
+                    self.stderr.write(
+                        self.style.WARNING(
+                            f'Cliente "{item.get("name", "sin nombre")}" sin fecha. Omitido.'
+                        )
+                    )
+                    break
+                client_fields[field] = datetime.strptime(date_value, '%Y-%m-%d').date()
+            else:
+                Client.objects.create(**client_fields)
+                created_count += 1
 
         self.stdout.write(
             self.style.SUCCESS(f'Carga completada: {created_count} clientes creados.')

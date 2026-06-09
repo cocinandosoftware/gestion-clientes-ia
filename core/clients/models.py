@@ -1,10 +1,10 @@
 from django.db import models
+from django.utils import timezone
 
 
 class Client(models.Model):
 
-
-    date = models.DateField('fecha', auto_now_add=True)
+    date = models.DateField('fecha', default=timezone.now)
     
     name = models.CharField('nombre', max_length=200)
     company_name = models.CharField('razón social', max_length=200, blank=True)

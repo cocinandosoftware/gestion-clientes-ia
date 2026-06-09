@@ -16,7 +16,26 @@
                 id="client-search"
                 type="search"
                 name="q"
+                value="{{ search_query }}"
                 placeholder="Nombre, email, teléfono o empresa..."
+            >
+        </div>
+        <div class="private-search__field private-search__field--date">
+            <label for="date-from">Desde</label>
+            <input
+                id="date-from"
+                type="date"
+                name="date_from"
+                value="{{ date_from }}"
+            >
+        </div>
+        <div class="private-search__field private-search__field--date">
+            <label for="date-until">Hasta</label>
+            <input
+                id="date-until"
+                type="date"
+                name="date_until"
+                value="{{ date_until }}"
             >
         </div>
         <div class="private-search__actions">
@@ -76,7 +95,13 @@
             </table>
         </div>
     {% else %}
-        <p class="private-empty">No hay clientes registrados todavía.</p>
+        <p class="private-empty">
+            {% if has_filters %}
+                No se encontraron clientes con los filtros aplicados.
+            {% else %}
+                No hay clientes registrados todavía.
+            {% endif %}
+        </p>
     {% endif %}
 </section>
 {% endblock %}

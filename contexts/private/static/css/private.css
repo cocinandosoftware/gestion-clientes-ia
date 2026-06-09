@@ -156,6 +156,10 @@ a {
     flex: 1 1 220px;
 }
 
+.private-search__field--date {
+    flex: 0 1 160px;
+}
+
 .private-search__field label {
     display: block;
     margin-bottom: 0.35rem;
