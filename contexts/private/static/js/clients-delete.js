@@ -10,35 +10,32 @@ function getCsrfToken() {
     return cookieValue.split('=')[1];
 }
 
-function showEmptyClientsMessage(hasFilters) {
-    const tableWrap = document.getElementById('clients-table-wrap');
-
-    if (!tableWrap) {
-        return;
-    }
-
-    const message = hasFilters
-        ? 'No se encontraron clientes con los filtros aplicados.'
-        : 'No hay clientes registrados todavía.';
-
-    tableWrap.innerHTML = `<p class="private-empty">${message}</p>`;
+function getHasFilters(listSection) {
+    return listSection?.dataset.hasFilters === 'true';
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+function showEmptyClientsMessage(hasFilters) {
+    const tableWrap = document.getElementById('clients-table-wrap');
+    const tbody = document.getElementById('clients-table-body');
+    const emptyMessage = document.getElementById('clients-empty');
 
-    const listSection = document.getElementById('clients-list');
-    const deleteButtons = document.querySelectorAll('.private-btn-delete');
-
-    if (!deleteButtons.length) {
+    if (!tableWrap || !tbody || !emptyMessage) {
         return;
     }
 
+    tableWrap.hidden = true;
+    tbody.innerHTML = '';
+    emptyMessage.textContent = hasFilters
+        ? 'No se encontraron clientes con los filtros aplicados.'
+        : 'No hay clientes registrados todavía.';
+    emptyMessage.hidden = false;
+}
 
-
-    const hasFilters = listSection?.dataset.hasFilters === 'true';
+function bindClientDeleteButtons(listSection) {
+    const deleteButtons = document.querySelectorAll('.private-btn-delete');
+    const hasFilters = getHasFilters(listSection);
 
     deleteButtons.forEach(function (button) {
-       
         button.addEventListener('click', async function () {
             const clientName = button.dataset.clientName;
             const deleteUrl = button.dataset.deleteUrl;
@@ -46,8 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!confirm(`¿Eliminar a ${clientName}?`)) {
                 return;
             }
-            
-            console.log("eliminar cliente", clientName);
 
             button.disabled = true;
             button.classList.add('is-loading');
@@ -88,4 +83,5 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
-});
+}
+

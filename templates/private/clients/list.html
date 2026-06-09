@@ -12,16 +12,16 @@
 <section
     class="private-card"
     id="clients-list"
-    data-has-filters="{% if has_filters %}true{% else %}false{% endif %}"
+    data-has-filters="false"
+    data-search-url="{% url 'client_search' %}"
 >
-    <form class="private-search" method="get" action="">
+    <form class="private-search" id="client-search-form" method="get" action="">
         <div class="private-search__field">
             <label for="client-search">Buscar clientes</label>
             <input
                 id="client-search"
                 type="search"
                 name="q"
-                value="{{ search_query }}"
                 placeholder="Nombre, email, teléfono o empresa..."
             >
         </div>
@@ -31,7 +31,6 @@
                 id="date-from"
                 type="date"
                 name="date_from"
-                value="{{ date_from }}"
             >
         </div>
         <div class="private-search__field private-search__field--date">
@@ -40,16 +39,17 @@
                 id="date-until"
                 type="date"
                 name="date_until"
-                value="{{ date_until }}"
             >
         </div>
         <div class="private-search__actions">
-            <button type="submit" class="private-btn private-btn--primary">Buscar</button>
+            <button type="submit" class="private-btn private-btn--primary" id="client-search-submit">
+                Buscar
+            </button>
         </div>
     </form>
 
-    {% if clients %}
-        <div class="private-table-wrap" id="clients-table-wrap">
+    <div id="clients-results">
+        <div class="private-table-wrap" id="clients-table-wrap" hidden>
             <table class="private-table">
                 <thead>
                     <tr>
@@ -62,77 +62,29 @@
                         <th class="private-table__actions-head"></th>
                     </tr>
                 </thead>
-                <tbody id="clients-table-body">
-                    {% for client in clients %}
-                        <tr>
-                            <td>{{ client.name }}</td>
-                            <td>
-                                {% if client.company_name %}
-                                    {{ client.company_name }}
-                                {% else %}
-                                    <span class="private-table__muted">—</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if client.email %}
-                                    {{ client.email }}
-                                {% else %}
-                                    <span class="private-table__muted">—</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if client.phone %}
-                                    {{ client.phone }}
-                                {% else %}
-                                    <span class="private-table__muted">—</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if client.city %}
-                                    {{ client.city }}
-                                {% else %}
-                                    <span class="private-table__muted">—</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ client.date|date:"d/m/Y" }}</td>
-                            <td class="private-table__actions">
-                                <button
-                                    type="button"
-                                    class="private-btn-delete"
-                                    aria-label="Eliminar {{ client.name }}"
-                                    data-client-name="{{ client.name }}"
-                                    data-delete-url="{% url 'client_delete' client.pk %}"
-                                >
-                                    <svg
-                                        class="private-btn-delete__icon"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        aria-hidden="true"
-                                    >
-                                        <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/>
-                                        <path d="M10 11v6M14 11v6"/>
-                                    </svg>
-                                </button>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
+                <tbody id="clients-table-body"></tbody>
             </table>
         </div>
-    {% else %}
-        <p class="private-empty">
-            {% if has_filters %}
-                No se encontraron clientes con los filtros aplicados.
-            {% else %}
-                No hay clientes registrados todavía.
-            {% endif %}
-        </p>
-    {% endif %}
+        <p id="clients-empty" class="private-empty" hidden></p>
+    </div>
 </section>
+
+<div
+    id="clients-loader"
+    class="private-loader-overlay"
+    hidden
+    role="status"
+    aria-live="polite"
+    aria-busy="true"
+>
+    <div class="private-loader__content">
+        <div class="private-loader__spinner" aria-hidden="true"></div>
+        <p class="private-loader__text">Cargando clientes...</p>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'js/clients.js' %}"></script>
+    <script src="{% static 'js/clients-delete.js' %}"></script>
+    <script src="{% static 'js/clients-search.js' %}"></script>
 {% endblock %}
