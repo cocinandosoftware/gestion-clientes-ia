@@ -120,6 +120,17 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Estáticos de submódulos del área privada (clients, futuros CRUDs…).
+# Los globales del área privada viven en contexts/private/static/ (AppDirectoriesFinder).
+PRIVATE_CONTEXT_DIR = BASE_DIR / 'contexts/private'
+STATICFILES_DIRS = [
+    child / 'static'
+    for child in PRIVATE_CONTEXT_DIR.iterdir()
+    if child.is_dir()
+    and child.name != 'static'
+    and (child / 'static').is_dir()
+]
+
 AUTH_USER_MODEL = 'core.User'
 
 LOGIN_URL = 'login'
