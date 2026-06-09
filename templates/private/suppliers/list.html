@@ -1,0 +1,85 @@
+{% extends 'private/base_private.html' %}
+{% load static %}
+
+{% block title %}Proveedores | Gestión de Clientes{% endblock %}
+
+{% block content %}
+<header class="private-page-header private-page-header--with-actions">
+    <div>
+        <h1>Proveedores</h1>
+        <p>Listado de proveedores asociados a clientes.</p>
+    </div>
+    <button
+        type="button"
+        id="supplier-new-button"
+        class="private-btn private-btn--primary"
+        data-create-url="{% url 'supplier_create' %}"
+    >
+        Nuevo
+    </button>
+</header>
+
+<section
+    class="private-card"
+    id="suppliers-list"
+    data-has-filters="false"
+    data-search-url="{% url 'supplier_search' %}"
+>
+    <form class="private-search" id="supplier-search-form" method="get" action="">
+        <div class="private-search__field">
+            <label for="supplier-search">Buscar proveedores</label>
+            <input
+                id="supplier-search"
+                type="search"
+                name="q"
+                placeholder="Nombre, email, teléfono o empresa..."
+            >
+        </div>
+        <div class="private-search__field private-search__field--select">
+            <label for="supplier-client-filter">Cliente</label>
+            <select id="supplier-client-filter" name="client_id">
+                <option value="">Todos los clientes</option>
+            </select>
+        </div>
+        <div class="private-search__field private-search__field--date">
+            <label for="supplier-date-from">Desde</label>
+            <input id="supplier-date-from" type="date" name="date_from">
+        </div>
+        <div class="private-search__field private-search__field--date">
+            <label for="supplier-date-until">Hasta</label>
+            <input id="supplier-date-until" type="date" name="date_until">
+        </div>
+        <div class="private-search__actions">
+            <button type="submit" class="private-btn private-btn--primary" id="supplier-search-submit">
+                Buscar
+            </button>
+        </div>
+    </form>
+
+    <div id="suppliers-results">
+        <div class="private-table-wrap" id="suppliers-table-wrap" hidden>
+            <table class="private-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Razón social</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Ciudad</th>
+                        <th>Clientes</th>
+                        <th>Fecha</th>
+                        <th class="private-table__actions-head">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="suppliers-table-body"></tbody>
+            </table>
+        </div>
+        <p id="suppliers-empty" class="private-empty" hidden></p>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/suppliers-delete.js' %}"></script>
+    <script src="{% static 'js/suppliers-search.js' %}"></script>
+{% endblock %}

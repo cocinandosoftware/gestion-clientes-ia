@@ -7,4 +7,5 @@ class CoreConfig(AppConfig):
 
     def ready(self):
         from core.clients import admin as clients_admin  # noqa: F401
+        from core.suppliers import admin as suppliers_admin  # noqa: F401
         from core.users import admin as users_admin  # noqa: F401

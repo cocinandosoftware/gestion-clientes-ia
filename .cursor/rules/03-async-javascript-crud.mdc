@@ -22,7 +22,7 @@ Referencia implementada: módulo **Clientes** en `contexts/private/`.
 
 Ubicación JS del módulo: `contexts/private/clients/static/js/`
 Ubicación JS global del área privada: `contexts/private/static/js/` (ej. `private-loader.js`)
-Ubicación vistas: `contexts/private/views/` (un módulo por operación).
+Ubicación vistas: `contexts/private/<modulo>/views/` (un archivo por operación: `list.py`, `search.py`, `create.py`, `edit.py`, `delete.py`).
 Ubicación lógica de dominio: `contexts/private/clients/` (`queries.py`, `validation.py`).
 
 ## Patrón backend (Django)
@@ -152,7 +152,7 @@ Replicar la misma estructura:
 
 1. Modelo en `core/<entidad>/`.
 2. Dominio en `contexts/private/<entidad>/` (`queries.py`, `validation.py`, `static/`).
-3. Vistas divididas en `contexts/private/views/<entidad>_*.py`.
+3. Vistas en `contexts/private/<entidad>/views/` + `urls.py` en el módulo.
 4. APIs JSON + templates HTML sin datos embebidos en listados.
 5. Un JS por operación async en `contexts/private/<entidad>/static/js/`.
 6. `PrivateLoader` en cada `fetch` del módulo.

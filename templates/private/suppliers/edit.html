@@ -1,0 +1,86 @@
+{% extends 'private/base_private.html' %}
+{% load static %}
+
+{% block title %}Editar proveedor | Gestión de Clientes{% endblock %}
+
+{% block content %}
+<header class="private-page-header">
+    <h1>Editar proveedor</h1>
+    <p>Modifica los datos del proveedor y sus clientes asociados.</p>
+</header>
+
+<section class="private-card private-form-card">
+    <form
+        id="supplier-edit-form"
+        class="private-form"
+        method="post"
+        action=""
+        data-detail-url="{% url 'supplier_detail' supplier_id %}"
+        data-update-url="{% url 'supplier_update' supplier_id %}"
+        data-options-url="{% url 'supplier_search' %}"
+    >
+        {% csrf_token %}
+
+        <div id="supplier-edit-errors" class="private-form-errors" hidden></div>
+
+        <div class="private-form__grid">
+            <div class="private-form__field">
+                <label for="supplier-date">Fecha</label>
+                <input id="supplier-date" type="date" name="date" required>
+            </div>
+            <div class="private-form__field">
+                <label for="supplier-name">Nombre</label>
+                <input id="supplier-name" type="text" name="name" required>
+            </div>
+            <div class="private-form__field">
+                <label for="supplier-company">Razón social</label>
+                <input id="supplier-company" type="text" name="company_name" required>
+            </div>
+            <div class="private-form__field">
+                <label for="supplier-phone">Teléfono</label>
+                <input id="supplier-phone" type="text" name="phone" required>
+            </div>
+            <div class="private-form__field">
+                <label for="supplier-email">Email</label>
+                <input id="supplier-email" type="email" name="email" required>
+            </div>
+            <div class="private-form__field private-form__field--full">
+                <label for="supplier-address">Dirección</label>
+                <input id="supplier-address" type="text" name="address_line" required>
+            </div>
+            <div class="private-form__field">
+                <label for="supplier-city">Ciudad</label>
+                <input id="supplier-city" type="text" name="city" required>
+            </div>
+            <div class="private-form__field">
+                <label for="supplier-postal">Código postal</label>
+                <input id="supplier-postal" type="text" name="postal_code" required>
+            </div>
+            <div class="private-form__field">
+                <label for="supplier-province">Provincia</label>
+                <input id="supplier-province" type="text" name="province" required>
+            </div>
+            <div class="private-form__field private-form__field--full">
+                <label for="supplier-notes">Notas</label>
+                <textarea id="supplier-notes" name="notes" rows="4" required></textarea>
+            </div>
+            <div class="private-form__field private-form__field--full">
+                <span class="private-form__group-label">Clientes asociados</span>
+                <div id="supplier-clients-options" class="private-form__checkbox-group"></div>
+            </div>
+        </div>
+
+        <div class="private-form__actions">
+            <a href="{% url 'supplier_list' %}" class="private-btn">Cancelar</a>
+            <button type="submit" class="private-btn private-btn--primary" id="supplier-edit-submit">
+                Guardar cambios
+            </button>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/suppliers-form-shared.js' %}"></script>
+    <script src="{% static 'js/suppliers-edit.js' %}"></script>
+{% endblock %}

@@ -35,6 +35,14 @@
                             Clientes
                         </a>
                     </li>
+                    <li>
+                        <a
+                            href="{% url 'supplier_list' %}"
+                            class="private-nav__link{% if active_menu == 'suppliers' %} private-nav__link--active{% endif %}"
+                        >
+                            Proveedores
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </aside>

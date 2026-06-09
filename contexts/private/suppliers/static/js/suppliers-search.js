@@ -39,31 +39,32 @@ function renderCell(value) {
     return '<td><span class="private-table__muted">—</span></td>';
 }
 
-function buildClientRow(client) {
+function buildSupplierRow(supplier) {
     return `
         <tr>
-            <td>${escapeHtml(client.name)}</td>
-            ${renderCell(client.company_name)}
-            ${renderCell(client.email)}
-            ${renderCell(client.phone)}
-            ${renderCell(client.city)}
-            <td>${escapeHtml(client.date)}</td>
+            <td>${escapeHtml(supplier.name)}</td>
+            ${renderCell(supplier.company_name)}
+            ${renderCell(supplier.email)}
+            ${renderCell(supplier.phone)}
+            ${renderCell(supplier.city)}
+            ${renderCell(supplier.clients_label)}
+            <td>${escapeHtml(supplier.date)}</td>
             <td class="private-table__actions">
                 <div class="private-table__actions-inner">
                     <button
                         type="button"
                         class="private-btn-edit"
-                        aria-label="Editar ${escapeHtml(client.name)}"
-                        data-edit-url="${escapeHtml(client.edit_url)}"
+                        aria-label="Editar ${escapeHtml(supplier.name)}"
+                        data-edit-url="${escapeHtml(supplier.edit_url)}"
                     >
                         ${EDIT_ICON_SVG}
                     </button>
                     <button
                         type="button"
                         class="private-btn-delete"
-                        aria-label="Eliminar ${escapeHtml(client.name)}"
-                        data-client-name="${escapeHtml(client.name)}"
-                        data-delete-url="${escapeHtml(client.delete_url)}"
+                        aria-label="Eliminar ${escapeHtml(supplier.name)}"
+                        data-supplier-name="${escapeHtml(supplier.name)}"
+                        data-delete-url="${escapeHtml(supplier.delete_url)}"
                     >
                         ${DELETE_ICON_SVG}
                     </button>
@@ -80,7 +81,7 @@ function setHasFilters(listSection, hasFilters) {
 }
 
 function showLoadError(message) {
-    const emptyMessage = document.getElementById('clients-empty');
+    const emptyMessage = document.getElementById('suppliers-empty');
 
     alert(message);
 
@@ -90,21 +91,36 @@ function showLoadError(message) {
     }
 }
 
-function updateClientsView(clients, hasFilters) {
-    const tableWrap = document.getElementById('clients-table-wrap');
-    const tbody = document.getElementById('clients-table-body');
-    const emptyMessage = document.getElementById('clients-empty');
-    const listSection = document.getElementById('clients-list');
+function populateClientFilter(select, clientOptions, selectedValue) {
+    if (!select) {
+        return;
+    }
+
+    const currentValue = selectedValue || select.value || '';
+    const optionsHtml = clientOptions.map((client) => {
+        const selected = String(client.id) === String(currentValue) ? ' selected' : '';
+
+        return `<option value="${client.id}"${selected}>${escapeHtml(client.name)}</option>`;
+    }).join('');
+
+    select.innerHTML = `<option value="">Todos los clientes</option>${optionsHtml}`;
+}
+
+function updateSuppliersView(suppliers, hasFilters) {
+    const tableWrap = document.getElementById('suppliers-table-wrap');
+    const tbody = document.getElementById('suppliers-table-body');
+    const emptyMessage = document.getElementById('suppliers-empty');
+    const listSection = document.getElementById('suppliers-list');
 
     if (!tableWrap || !tbody || !emptyMessage) {
         return;
     }
 
-    if (!clients.length) {
+    if (!suppliers.length) {
         tableWrap.hidden = true;
         emptyMessage.textContent = hasFilters
-            ? 'No se encontraron clientes con los filtros aplicados.'
-            : 'No hay clientes registrados todavía.';
+            ? 'No se encontraron proveedores con los filtros aplicados.'
+            : 'No hay proveedores registrados todavía.';
         emptyMessage.hidden = false;
         tbody.innerHTML = '';
         return;
@@ -112,12 +128,12 @@ function updateClientsView(clients, hasFilters) {
 
     tableWrap.hidden = false;
     emptyMessage.hidden = true;
-    tbody.innerHTML = clients.map(buildClientRow).join('');
-    bindClientEditButtons();
-    bindClientDeleteButtons(listSection);
+    tbody.innerHTML = suppliers.map(buildSupplierRow).join('');
+    bindSupplierEditButtons();
+    bindSupplierDeleteButtons(listSection);
 }
 
-function bindClientEditButtons() {
+function bindSupplierEditButtons() {
     document.querySelectorAll('.private-btn-edit').forEach(function (button) {
         button.addEventListener('click', function () {
             const editUrl = button.dataset.editUrl;
@@ -131,13 +147,13 @@ function bindClientEditButtons() {
     });
 }
 
-async function loadClients(listSection, searchForm, searchUrl, submitButton) {
+async function loadSuppliers(listSection, searchForm, searchUrl, submitButton) {
     if (submitButton) {
         submitButton.disabled = true;
         submitButton.classList.add('is-loading');
     }
 
-    PrivateLoader.show('Cargando clientes...');
+    PrivateLoader.show('Cargando proveedores...');
 
     try {
         const params = new URLSearchParams(new FormData(searchForm));
@@ -150,12 +166,15 @@ async function loadClients(listSection, searchForm, searchUrl, submitButton) {
         const data = await response.json();
 
         if (response.ok && data.success) {
+            const clientSelect = searchForm.querySelector('[name="client_id"]');
+            populateClientFilter(clientSelect, data.client_options || [], clientSelect?.value);
+
             setHasFilters(listSection, data.has_filters);
-            updateClientsView(data.clients, data.has_filters);
+            updateSuppliersView(data.suppliers, data.has_filters);
             return;
         }
 
-        showLoadError('No se pudieron cargar los clientes.');
+        showLoadError('No se pudieron cargar los proveedores.');
     } catch (error) {
         showLoadError('Error de conexión. Inténtalo de nuevo.');
     } finally {
@@ -168,40 +187,40 @@ async function loadClients(listSection, searchForm, searchUrl, submitButton) {
     }
 }
 
-function bindClientSearchForm(listSection) {
-    const searchForm = document.getElementById('client-search-form');
+function bindSupplierSearchForm(listSection) {
+    const searchForm = document.getElementById('supplier-search-form');
     const searchUrl = listSection?.dataset.searchUrl;
-    const submitButton = document.getElementById('client-search-submit');
+    const submitButton = document.getElementById('supplier-search-submit');
 
     if (!searchForm || !searchUrl) {
         return;
     }
 
-    loadClients(listSection, searchForm, searchUrl, submitButton);
+    loadSuppliers(listSection, searchForm, searchUrl, submitButton);
 
     searchForm.addEventListener('submit', async function (event) {
         event.preventDefault();
-        await loadClients(listSection, searchForm, searchUrl, submitButton);
+        await loadSuppliers(listSection, searchForm, searchUrl, submitButton);
     });
 }
 
-function reloadClientList() {
-    const listSection = document.getElementById('clients-list');
-    const searchForm = document.getElementById('client-search-form');
+function reloadSupplierList() {
+    const listSection = document.getElementById('suppliers-list');
+    const searchForm = document.getElementById('supplier-search-form');
     const searchUrl = listSection?.dataset.searchUrl;
-    const submitButton = document.getElementById('client-search-submit');
+    const submitButton = document.getElementById('supplier-search-submit');
 
     if (!listSection || !searchForm || !searchUrl) {
         return;
     }
 
-    return loadClients(listSection, searchForm, searchUrl, submitButton);
+    return loadSuppliers(listSection, searchForm, searchUrl, submitButton);
 }
 
-window.reloadClientList = reloadClientList;
+window.reloadSupplierList = reloadSupplierList;
 
-function bindNewClientButton() {
-    const newButton = document.getElementById('client-new-button');
+function bindNewSupplierButton() {
+    const newButton = document.getElementById('supplier-new-button');
 
     if (!newButton) {
         return;
@@ -219,7 +238,7 @@ function bindNewClientButton() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const listSection = document.getElementById('clients-list');
-    bindClientSearchForm(listSection);
-    bindNewClientButton();
+    const listSection = document.getElementById('suppliers-list');
+    bindSupplierSearchForm(listSection);
+    bindNewSupplierButton();
 });

@@ -1,0 +1,305 @@
+[
+  {
+    "client_email": "ana.garcia@garciaconsultores.es",
+    "suppliers": [
+      {
+        "name": "Papelería Central Madrid",
+        "company_name": "Papelería Central SL",
+        "phone": "910112233",
+        "email": "ventas@papeleriacentral.es",
+        "address_line": "Calle Alcalá 45",
+        "city": "Madrid",
+        "postal_code": "28014",
+        "province": "Madrid",
+        "notes": "Suministro mensual de material de oficina.",
+        "date": "2025-10-01"
+      },
+      {
+        "name": "Servicios IT Pro",
+        "company_name": "IT Pro Solutions",
+        "phone": "910998877",
+        "email": "soporte@itprosolutions.es",
+        "address_line": "Calle Orense 12",
+        "city": "Madrid",
+        "postal_code": "28020",
+        "province": "Madrid",
+        "notes": "Mantenimiento de servidores y licencias.",
+        "date": "2025-09-15"
+      }
+    ]
+  },
+  {
+    "client_email": "carlos@ruizdigital.com",
+    "suppliers": [
+      {
+        "name": "Hosting Cloud España",
+        "company_name": "Cloud España Hosting SL",
+        "phone": "954111222",
+        "email": "info@cloudespana.es",
+        "address_line": "Polígono Sur, Nave 8",
+        "city": "Sevilla",
+        "postal_code": "41007",
+        "province": "Sevilla",
+        "notes": "Hosting y dominios corporativos.",
+        "date": "2025-08-20"
+      }
+    ]
+  },
+  {
+    "client_email": "elena.vidal@vidalarq.es",
+    "suppliers": [
+      {
+        "name": "Materiales Construcción Levante",
+        "company_name": "Construcción Levante SA",
+        "phone": "963445566",
+        "email": "pedidos@construccionlevante.es",
+        "address_line": "Avenida del Puerto 200",
+        "city": "Valencia",
+        "postal_code": "46024",
+        "province": "Valencia",
+        "notes": "Suministro de acero y cemento.",
+        "date": "2025-07-10"
+      },
+      {
+        "name": "Diseño Interior Studio",
+        "company_name": "Interior Studio Valencia",
+        "phone": "963778899",
+        "email": "contacto@interiorstudio.es",
+        "address_line": "Calle Colón 88",
+        "city": "Valencia",
+        "postal_code": "46004",
+        "province": "Valencia",
+        "notes": "Mobiliario y acabados para proyectos.",
+        "date": "2025-06-28"
+      }
+    ]
+  },
+  {
+    "client_email": "miguel.torres@torreslogistics.es",
+    "suppliers": [
+      {
+        "name": "Transportes Rápidos Norte",
+        "company_name": "Transportes Rápidos SL",
+        "phone": "976334455",
+        "email": "logistica@transportesrapidos.es",
+        "address_line": "Polígono Industrial Malpica",
+        "city": "Zaragoza",
+        "postal_code": "50016",
+        "province": "Zaragoza",
+        "notes": "Flota de camiones refrigerados.",
+        "date": "2025-05-22"
+      }
+    ]
+  },
+  {
+    "client_email": "laura@fernandezmarketing.es",
+    "suppliers": [
+      {
+        "name": "Creativos Online",
+        "company_name": "Creativos Online SL",
+        "phone": "954667788",
+        "email": "creativos@creativosonline.es",
+        "address_line": "Calle Betis 33",
+        "city": "Sevilla",
+        "postal_code": "41010",
+        "province": "Sevilla",
+        "notes": "Diseño gráfico y vídeo para campañas.",
+        "date": "2025-04-14"
+      }
+    ]
+  },
+  {
+    "client_email": "javier.morales@moralestech.io",
+    "suppliers": [
+      {
+        "name": "Servicios IT Pro",
+        "company_name": "IT Pro Solutions",
+        "phone": "910998877",
+        "email": "soporte@itprosolutions.es",
+        "address_line": "Calle Orense 12",
+        "city": "Madrid",
+        "postal_code": "28020",
+        "province": "Madrid",
+        "notes": "Mantenimiento de servidores y licencias.",
+        "date": "2025-03-08"
+      },
+      {
+        "name": "Componentes Electrónicos BCN",
+        "company_name": "Electrónicos BCN SL",
+        "phone": "932112233",
+        "email": "ventas@electronicosbcn.es",
+        "address_line": "Rambla del Poblenou 120",
+        "city": "Barcelona",
+        "postal_code": "08019",
+        "province": "Barcelona",
+        "notes": "Componentes y hardware especializado.",
+        "date": "2025-02-19"
+      }
+    ]
+  },
+  {
+    "client_email": "isabel.romero@romeronutricion.es",
+    "suppliers": [
+      {
+        "name": "Alimentos Saludables Sur",
+        "company_name": "Alimentos Saludables SL",
+        "phone": "952334455",
+        "email": "pedidos@alimentossaludables.es",
+        "address_line": "Calle Larios 18",
+        "city": "Málaga",
+        "postal_code": "29016",
+        "province": "Málaga",
+        "notes": "Productos orgánicos y suplementos.",
+        "date": "2025-01-30"
+      }
+    ]
+  },
+  {
+    "client_email": "pedro.sanchez@sanchezconstrucciones.es",
+    "suppliers": [
+      {
+        "name": "Materiales Construcción Levante",
+        "company_name": "Construcción Levante SA",
+        "phone": "963445566",
+        "email": "pedidos@construccionlevante.es",
+        "address_line": "Avenida del Puerto 200",
+        "city": "Valencia",
+        "postal_code": "46024",
+        "province": "Valencia",
+        "notes": "Suministro de acero y cemento.",
+        "date": "2024-12-05"
+      },
+      {
+        "name": "Maquinaria Obra Granada",
+        "company_name": "Maquinaria Obra SL",
+        "phone": "958667788",
+        "email": "alquiler@maquinariaobra.es",
+        "address_line": "Carretera de Jaén Km 3",
+        "city": "Granada",
+        "postal_code": "18015",
+        "province": "Granada",
+        "notes": "Alquiler de excavadoras y grúas.",
+        "date": "2024-11-20"
+      }
+    ]
+  },
+  {
+    "client_email": "carmen@iglesiasboutique.com",
+    "suppliers": [
+      {
+        "name": "Moda Textil Castilla",
+        "company_name": "Textil Castilla SL",
+        "phone": "923445566",
+        "email": "ventas@textilcastilla.es",
+        "address_line": "Calle Toro 55",
+        "city": "Salamanca",
+        "postal_code": "37005",
+        "province": "Salamanca",
+        "notes": "Colecciones temporada primavera-verano.",
+        "date": "2024-10-12"
+      }
+    ]
+  },
+  {
+    "client_email": "roberto.diaz@diazingenieria.es",
+    "suppliers": [
+      {
+        "name": "Componentes Electrónicos BCN",
+        "company_name": "Electrónicos BCN SL",
+        "phone": "932112233",
+        "email": "ventas@electronicosbcn.es",
+        "address_line": "Rambla del Poblenou 120",
+        "city": "Barcelona",
+        "postal_code": "08019",
+        "province": "Barcelona",
+        "notes": "Componentes y hardware especializado.",
+        "date": "2024-09-28"
+      }
+    ]
+  },
+  {
+    "client_email": "sofia.herrera@herreraeducacion.es",
+    "suppliers": [
+      {
+        "name": "Editorial Formación Plus",
+        "company_name": "Formación Plus Editorial",
+        "phone": "983112233",
+        "email": "editorial@formacionplus.es",
+        "address_line": "Calle Santiago 22",
+        "city": "Valladolid",
+        "postal_code": "47003",
+        "province": "Valladolid",
+        "notes": "Manuales y material didáctico corporativo.",
+        "date": "2024-08-15"
+      }
+    ]
+  },
+  {
+    "client_email": "francisco.lema@lemahosteleria.es",
+    "suppliers": [
+      {
+        "name": "Distribución Hostelería Costa",
+        "company_name": "Hostelería Costa SL",
+        "phone": "965778899",
+        "email": "pedidos@hosteleriacosta.es",
+        "address_line": "Polígono San Juan, Nave 4",
+        "city": "Alicante",
+        "postal_code": "03008",
+        "province": "Alicante",
+        "notes": "Bebidas y productos frescos semanales.",
+        "date": "2024-07-22"
+      }
+    ]
+  },
+  {
+    "client_email": "marta@blancodiseno.es",
+    "suppliers": [
+      {
+        "name": "Creativos Online",
+        "company_name": "Creativos Online SL",
+        "phone": "954667788",
+        "email": "creativos@creativosonline.es",
+        "address_line": "Calle Betis 33",
+        "city": "Sevilla",
+        "postal_code": "41010",
+        "province": "Sevilla",
+        "notes": "Diseño gráfico y vídeo para campañas.",
+        "date": "2024-06-10"
+      }
+    ]
+  },
+  {
+    "client_email": "alberto.mendez@mendezauto.es",
+    "suppliers": [
+      {
+        "name": "Recambios Automoción Toledo",
+        "company_name": "Recambios Toledo SL",
+        "phone": "925334455",
+        "email": "recambios@recambiosauto.es",
+        "address_line": "Polígono Industrial El Mirador",
+        "city": "Toledo",
+        "postal_code": "45007",
+        "province": "Toledo",
+        "notes": "Piezas originales y alternativas.",
+        "date": "2024-05-18"
+      }
+    ]
+  },
+  {
+    "client_email": "patricia.navas@navaslegal.es",
+    "suppliers": [
+      {
+        "name": "Servicios Jurídicos Digital",
+        "company_name": "Jurídicos Digital SL",
+        "phone": "931223344",
+        "email": "info@juridicosdigital.es",
+        "address_line": "Passeig de Gràcia 55",
+        "city": "Barcelona",
+        "postal_code": "08007",
+        "province": "Barcelona",
+        "notes": "Software de gestión de expedientes.",
+        "date": "2024-04-03"
+      }
+    ]
+  }
+]
