@@ -123,5 +123,5 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 AUTH_USER_MODEL = 'core.User'
 
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'private_welcome'
+LOGIN_REDIRECT_URL = 'client_list'
 LOGOUT_REDIRECT_URL = 'home'

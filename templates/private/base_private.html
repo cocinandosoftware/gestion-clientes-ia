@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Área privada | Gestión de Clientes{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/private.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="private-topbar">
+        <a href="{% url 'client_list' %}" class="private-topbar__brand">Gestión de Clientes</a>
+        <div class="private-topbar__user">
+            <span class="private-topbar__username">
+                Hola, <strong>{{ user.username }}</strong>
+            </span>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="private-btn">Cerrar sesión</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="private-layout">
+        <aside class="private-sidebar">
+            <p class="private-sidebar__label">Menú</p>
+            <nav>
+                <ul class="private-nav">
+                    <li>
+                        <a
+                            href="{% url 'client_list' %}"
+                            class="private-nav__link{% if active_menu == 'clients' %} private-nav__link--active{% endif %}"
+                        >
+                            Clientes
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="private-main">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
