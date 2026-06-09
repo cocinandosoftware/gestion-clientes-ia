@@ -1,0 +1,207 @@
+---
+alwaysApply: true
+---
+
+# Regla de desarrollo del proyecto
+
+## Contexto del proyecto
+
+Este proyecto es una aplicación privada desarrollada con:
+
+* Backend: Django.
+* Frontend: HTML renderizado por Django Templates.
+* JavaScript: Vanilla JS.
+* Base de datos: PostgreSQL o SQLite en fase inicial.
+* Objetivo inicial: CRUD de clientes.
+* Objetivo posterior: incorporar inteligencia artificial para asistir al usuario en acciones sobre clientes.
+
+El proyecto forma parte de una serie formativa para Cocinando Software. Por tanto, el código debe ser entendible, progresivo y fácil de explicar en vídeo.
+
+## Servidor de desarrollo
+
+* El proyecto debe levantarse **siempre en el puerto 8080**.
+* Comando estándar:
+
+```bash
+source venv/bin/activate
+python manage.py runserver 8080
+```
+
+* URL local: `http://127.0.0.1:8080/`
+* Alternativa: ejecutar `./run.sh` desde la raíz del proyecto.
+* No usar el puerto 8000 salvo que el usuario lo indique expresamente.
+
+## Principio principal
+
+No generar grandes bloques de código de una sola vez.
+
+El desarrollo debe realizarse siempre por fases pequeñas, revisables y explicables.
+
+Antes de escribir código, debes explicar brevemente:
+
+1. Qué vas a crear.
+2. Qué archivos vas a tocar.
+3. Por qué lo vas a hacer así.
+4. Qué quedará pendiente para la siguiente fase.
+
+## Restricciones obligatorias
+
+* No crear funcionalidades no solicitadas.
+* No anticipar fases futuras.
+* No generar más de una funcionalidad principal por respuesta.
+* No mezclar CRUD tradicional con IA hasta que el CRUD esté terminado.
+* No usar React, Vue, Angular, HTMX ni frameworks frontend.
+* No usar Django REST Framework salvo que se solicite expresamente.
+* No crear APIs complejas si una vista Django tradicional es suficiente.
+* No usar class-based views complejas si una function-based view es más clara para explicar.
+* No introducir arquitectura innecesaria.
+* No crear servicios, managers o abstracciones hasta que exista una necesidad real.
+* No modificar archivos que no estén directamente relacionados con la tarea solicitada.
+
+## Estilo de código
+
+* Código simple, legible y mantenible.
+* Nombres claros y descriptivos.
+* Evitar clever code.
+* Priorizar claridad frente a sofisticación.
+* Mantener funciones pequeñas.
+* Evitar duplicación, pero sin abstraer antes de tiempo.
+* Comentar solo cuando el código necesite contexto real.
+* El código debe poder explicarse fácilmente en una sesión formativa.
+
+## Flujo de desarrollo obligatorio
+
+El desarrollo debe seguir este orden:
+
+### Fase 1: base del proyecto
+
+* Crear proyecto Django.
+* Crear app principal.
+* Configurar templates.
+* Configurar static files.
+* Crear layout base.
+* Crear navegación básica.
+
+### Fase 2: modelo de clientes
+
+* Crear modelo Client.
+* Campos mínimos:
+
+  * name
+  * email
+  * phone
+  * company_name
+  * notes
+  * created_at
+  * updated_at
+* Crear migración.
+* Registrar modelo en admin.
+
+### Fase 3: listado de clientes
+
+* Vista de listado.
+* Template de listado.
+* Tabla simple.
+* Orden básico por fecha de creación descendente.
+
+### Fase 4: buscador de clientes
+
+* Búsqueda por nombre, email, teléfono y empresa.
+* Usar GET.
+* Mantener el término buscado visible en el input.
+* No usar JavaScript todavía salvo que se solicite.
+
+### Fase 5: creación de clientes
+
+* Formulario Django simple.
+* Vista create.
+* Validaciones básicas.
+* Redirección al listado después de guardar.
+
+### Fase 6: edición de clientes
+
+* Vista edit.
+* Reutilizar formulario si tiene sentido.
+* Mostrar datos actuales.
+* Guardar cambios y volver al listado.
+
+### Fase 7: eliminación de clientes
+
+* Vista delete.
+* Pantalla de confirmación.
+* No eliminar directamente desde un enlace GET.
+* Usar POST para confirmar eliminación.
+
+### Fase 8: mejora visual básica
+
+* Mejorar templates.
+* Mejorar navegación.
+* Mejorar mensajes de éxito/error.
+* Mantener diseño simple.
+
+### Fase 9: JavaScript Vanilla opcional
+
+* Añadir pequeñas mejoras progresivas.
+* No convertir la aplicación en SPA.
+* No sustituir el funcionamiento servidor por JavaScript si no es necesario.
+
+### Fase 10: preparación para IA
+
+* Definir acciones disponibles sobre clientes.
+* Definir estructura de intención.
+* Definir JSON esperado.
+* No conectar todavía ningún proveedor IA.
+
+### Fase 11: integración IA
+
+* Crear capa AIService.
+* Crear providers intercambiables.
+* No acoplar el sistema a Grok, OpenAI ni ningún proveedor concreto.
+* La IA nunca debe escribir directamente en base de datos.
+* La IA solo debe devolver intención y datos estructurados.
+* Django valida y ejecuta.
+
+## Norma para IA aplicada al CRUD
+
+La IA debe funcionar como intérprete de intención, no como ejecutor directo.
+
+Ejemplo de salida esperada:
+
+```json
+{
+  "intent": "create_client",
+  "confidence": 0.92,
+  "data": {
+    "name": "Juan Pérez",
+    "email": "juan@email.com",
+    "phone": "600123123",
+    "company_name": "Empresa Demo"
+  }
+}
+```
+
+Acciones permitidas inicialmente:
+
+* search_clients
+* create_client
+* update_client
+* delete_client
+
+Toda acción destructiva o modificadora debe requerir confirmación explícita del usuario antes de ejecutarse.
+
+## Forma correcta de responder
+
+Cuando se solicite una tarea, responde con esta estructura:
+
+1. Resumen breve de la fase.
+2. Archivos que se van a crear o modificar.
+3. Código necesario.
+4. Explicación breve del código.
+5. Cómo probarlo.
+6. Qué fase vendría después.
+
+## Límite de generación
+
+No generar más de 150 líneas de código por respuesta salvo que se autorice expresamente.
+
+Si la tarea requiere más código, dividirla en pasos.
