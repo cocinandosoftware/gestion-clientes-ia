@@ -54,6 +54,7 @@
                         <th>Teléfono</th>
                         <th>Ciudad</th>
                         <th>Fecha</th>
+                        <th class="private-table__actions-head"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -89,6 +90,41 @@
                                 {% endif %}
                             </td>
                             <td>{{ client.date|date:"d/m/Y" }}</td>
+                            <td class="private-table__actions">
+                                <form
+                                    method="post"
+                                    action="{% url 'client_delete' client.pk %}"
+                                    onsubmit="return confirm('¿Eliminar a {{ client.name }}?');"
+                                >
+                                    {% csrf_token %}
+                                    {% if search_query %}
+                                        <input type="hidden" name="q" value="{{ search_query }}">
+                                    {% endif %}
+                                    {% if date_from %}
+                                        <input type="hidden" name="date_from" value="{{ date_from }}">
+                                    {% endif %}
+                                    {% if date_until %}
+                                        <input type="hidden" name="date_until" value="{{ date_until }}">
+                                    {% endif %}
+                                    <button
+                                        type="submit"
+                                        class="private-btn-delete"
+                                        aria-label="Eliminar {{ client.name }}"
+                                    >
+                                        <svg
+                                            class="private-btn-delete__icon"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            aria-hidden="true"
+                                        >
+                                            <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/>
+                                            <path d="M10 11v6M14 11v6"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>

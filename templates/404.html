@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página no encontrada | Gestión de Clientes</title>
+    <link rel="stylesheet" href="{% static 'css/errors.css' %}">
+</head>
+<body>
+    <main class="error-page">
+        <div class="error-card">
+            <p class="error-card__code">404</p>
+            <p class="error-card__eyebrow">Recurso no encontrado</p>
+            <h1>No hemos encontrado lo que buscas</h1>
+            <p>
+                El cliente o la página que intentas acceder no existe
+                o ya no está disponible en el sistema.
+            </p>
+            <div class="error-card__actions">
+                <a href="{% url 'home' %}" class="error-btn error-btn--ghost">Ir al inicio</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'client_list' %}" class="error-btn error-btn--primary">
+                        Volver a clientes
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="error-btn error-btn--primary">
+                        Iniciar sesión
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</body>
+</html>

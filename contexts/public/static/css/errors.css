@@ -1,0 +1,102 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, sans-serif;
+    line-height: 1.5;
+    color: #0f172a;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+.error-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+}
+
+.error-card {
+    width: 100%;
+    max-width: 480px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.error-card__code {
+    font-size: 4rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: #2563eb;
+    line-height: 1;
+}
+
+.error-card__eyebrow {
+    margin-top: 1rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+}
+
+.error-card h1 {
+    margin-top: 0.5rem;
+    font-size: clamp(1.5rem, 3vw, 1.875rem);
+    letter-spacing: -0.02em;
+}
+
+.error-card p {
+    margin-top: 0.75rem;
+    color: #64748b;
+    line-height: 1.7;
+}
+
+.error-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1.75rem;
+}
+
+.error-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.125rem;
+    border-radius: 10px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.error-btn--primary {
+    color: #fff;
+    background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
+}
+
+.error-btn--primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.28);
+}
+
+.error-btn--ghost {
+    color: #1e40af;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+}
+
+.error-btn--ghost:hover {
+    background: #dbeafe;
+}

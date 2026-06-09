@@ -1,9 +1,13 @@
 from datetime import datetime
 
+from urllib.parse import urlencode
+
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import redirect, render
+from django.urls import reverse
 
+from config.views import page_not_found
 from core.clients.models import Client
 
 
@@ -59,3 +63,32 @@ def client_list_view(request):
             'has_filters': search_query or date_from or date_until,
         },
     )
+
+
+def build_list_redirect_params(post_data):
+    params = {}
+    if post_data.get('q'):
+        params['q'] = post_data.get('q')
+    if post_data.get('date_from'):
+        params['date_from'] = post_data.get('date_from')
+    if post_data.get('date_until'):
+        params['date_until'] = post_data.get('date_until')
+    return params
+
+
+@login_required
+def client_delete_view(request, client_id):
+    if request.method != 'POST':
+        return redirect('client_list')
+
+    try:
+        client = Client.objects.get(pk=client_id)
+    except Client.DoesNotExist:
+        return page_not_found(request)
+
+    client.delete()
+
+    params = build_list_redirect_params(request.POST)
+    if params:
+        return redirect(f'{reverse("client_list")}?{urlencode(params)}')
+    return redirect('client_list')

@@ -22,3 +22,5 @@ urlpatterns = [
     path('', include('contexts.public.urls')),
     path('private/', include('contexts.private.urls')),
 ]
+
+handler404 = 'config.views.page_not_found'

@@ -235,6 +235,36 @@ a {
     color: #94a3b8;
 }
 
+.private-table__actions-head,
+.private-table__actions {
+    text-align: right;
+    width: 1%;
+    white-space: nowrap;
+}
+
+.private-btn-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    background: #fef2f2;
+    color: #b91c1c;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.private-btn-delete:hover {
+    background: #fee2e2;
+    border-color: #f87171;
+}
+
+.private-btn-delete__icon {
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
 .private-empty {
     padding: 2.5rem 1.25rem;
     text-align: center;
