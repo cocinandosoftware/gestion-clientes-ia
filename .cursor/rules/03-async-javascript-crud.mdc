@@ -57,9 +57,10 @@ Ejemplo respuesta API crear:
 
 1. Botón en cada fila con `data-delete-url` y `data-client-name`.
 2. `confirm()` nativo antes de eliminar.
-3. `fetch` POST con cabecera `X-CSRFToken`.
-4. Si OK: quitar la fila del DOM; si no quedan filas, mostrar mensaje vacío.
-5. Tras insertar HTML nuevo (búsqueda), **re-enlazar** listeners de eliminar.
+3. `PrivateLoader.show('Eliminando...')` antes del `fetch`; `PrivateLoader.hide()` en `finally`.
+4. `fetch` POST con cabecera `X-CSRFToken`.
+5. Si OK: quitar la fila del DOM; si no quedan filas, mostrar mensaje vacío.
+6. Tras insertar HTML nuevo (búsqueda), **re-enlazar** listeners de eliminar.
 
 ## Patrón creación en pestaña nueva
 
@@ -73,12 +74,41 @@ Ejemplo respuesta API crear:
    - `window.close()`
 6. Si no hay `opener`, redirigir en la misma pestaña.
 
-## Loader pantalla completa
+## Loader unificado (obligatorio en TODAS las peticiones async)
 
-* Overlay `position: fixed` con opacidad (`private-loader-overlay`).
-* Mostrar antes del `fetch`; ocultar en `finally`.
-* CSS obligatorio: `.private-loader-overlay[hidden] { display: none !important; }` (evita conflicto con `display: flex`).
-* Bloquear scroll del body con clase `private-loader-active` mientras carga.
+**Regla:** cualquier `fetch` del área privada (listar, buscar, crear, editar, eliminar) debe usar `PrivateLoader`. No crear loaders locales ni duplicar HTML/CSS de carga.
+
+* HTML del overlay en `base_private.html` (`#private-loader`).
+* Objeto global: `window.PrivateLoader` en `contexts/private/static/js/private-loader.js` (incluido en el layout privado).
+* **No** volver a implementar `showLoader` / `hideLoader` en módulos concretos.
+
+Patrón obligatorio:
+
+```javascript
+PrivateLoader.show('Mensaje contextual...');
+
+try {
+    const response = await fetch(url, options);
+    // ...
+} catch (error) {
+    // ...
+} finally {
+    PrivateLoader.hide();
+}
+```
+
+Mensajes orientativos:
+
+| Operación | Mensaje ejemplo |
+|-----------|-----------------|
+| Listar / buscar | `Cargando clientes...` |
+| Crear | `Guardando cliente...` |
+| Editar | `Guardando cambios...` |
+| Eliminar | `Eliminando cliente...` |
+
+* Mostrar el loader **después** de validaciones locales (no antes del `confirm()` de eliminación).
+* Ocultar siempre en `finally`, aunque la petición falle o redirija.
+* CSS: `.private-loader-overlay[hidden] { display: none !important; }` y `body.private-loader-active`.
 
 ## Fetch y CSRF
 
@@ -118,4 +148,5 @@ Replicar la misma estructura:
 2. Vistas divididas en `contexts/private/views/<entidad>_*.py`.
 3. APIs JSON + templates HTML sin datos embebidos en listados.
 4. Un JS por operación async.
-5. Una fase por operación (listar → buscar → crear → editar → eliminar).
+5. `PrivateLoader` en cada `fetch` del módulo.
+6. Una fase por operación (listar → buscar → crear → editar → eliminar).

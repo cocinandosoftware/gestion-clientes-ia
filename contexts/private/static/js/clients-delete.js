@@ -46,6 +46,7 @@ function bindClientDeleteButtons(listSection) {
 
             button.disabled = true;
             button.classList.add('is-loading');
+            PrivateLoader.show('Eliminando cliente...');
 
             try {
                 const response = await fetch(deleteUrl, {
@@ -78,6 +79,7 @@ function bindClientDeleteButtons(listSection) {
             } catch (error) {
                 alert('Error de conexión. Inténtalo de nuevo.');
             } finally {
+                PrivateLoader.hide();
                 button.disabled = false;
                 button.classList.remove('is-loading');
             }

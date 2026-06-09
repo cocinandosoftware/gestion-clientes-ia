@@ -122,6 +122,8 @@ document.addEventListener('DOMContentLoaded', function () {
             submitButton.classList.add('is-loading');
         }
 
+        PrivateLoader.show('Guardando cliente...');
+
         try {
             const response = await fetch(createUrl, {
                 method: 'POST',
@@ -144,6 +146,8 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (error) {
             showFormErrors(errorBox, ['Error de conexión. Inténtalo de nuevo.']);
         } finally {
+            PrivateLoader.hide();
+
             if (submitButton) {
                 submitButton.disabled = false;
                 submitButton.classList.remove('is-loading');
