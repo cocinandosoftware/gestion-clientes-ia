@@ -1,25 +1,26 @@
 {% extends 'private/base_private.html' %}
 {% load static %}
 
-{% block title %}Nuevo cliente | Gestión de Clientes{% endblock %}
+{% block title %}Editar cliente | Gestión de Clientes{% endblock %}
 
 {% block content %}
 <header class="private-page-header">
-    <h1>Nuevo cliente</h1>
-    <p>Completa todos los campos para registrar un nuevo cliente.</p>
+    <h1>Editar cliente</h1>
+    <p>Modifica los datos del cliente. Todos los campos son obligatorios.</p>
 </header>
 
 <section class="private-card private-form-card">
     <form
-        id="client-create-form"
+        id="client-edit-form"
         class="private-form"
         method="post"
         action=""
-        data-create-url="{% url 'client_create_api' %}"
+        data-detail-url="{% url 'client_detail' client_id %}"
+        data-update-url="{% url 'client_update' client_id %}"
     >
         {% csrf_token %}
 
-        <div id="client-create-errors" class="private-form-errors" hidden></div>
+        <div id="client-edit-errors" class="private-form-errors" hidden></div>
 
         <div class="private-form__grid">
             <div class="private-form__field">
@@ -66,8 +67,8 @@
 
         <div class="private-form__actions">
             <a href="{% url 'client_list' %}" class="private-btn">Cancelar</a>
-            <button type="submit" class="private-btn private-btn--primary" id="client-create-submit">
-                Guardar cliente
+            <button type="submit" class="private-btn private-btn--primary" id="client-edit-submit">
+                Guardar cambios
             </button>
         </div>
     </form>
@@ -76,5 +77,5 @@
 
 {% block extra_js %}
     <script src="{% static 'js/clients-form-shared.js' %}"></script>
-    <script src="{% static 'js/clients-create.js' %}"></script>
+    <script src="{% static 'js/clients-edit.js' %}"></script>
 {% endblock %}

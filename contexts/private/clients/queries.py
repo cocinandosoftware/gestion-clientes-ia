@@ -50,5 +50,36 @@ def serialize_client(client):
         'phone': client.phone,
         'city': client.city,
         'date': client.date.strftime('%d/%m/%Y'),
+        'edit_url': reverse('client_edit', args=[client.id]),
         'delete_url': reverse('client_delete', args=[client.id]),
     }
+
+
+def serialize_client_form(client):
+    return {
+        'id': client.id,
+        'date': client.date.strftime('%Y-%m-%d'),
+        'name': client.name,
+        'company_name': client.company_name,
+        'phone': client.phone,
+        'email': client.email,
+        'address_line': client.address_line,
+        'city': client.city,
+        'postal_code': client.postal_code,
+        'province': client.province,
+        'notes': client.notes,
+    }
+
+
+def apply_client_payload(client, data):
+    client.date = datetime.strptime(data['date'], '%Y-%m-%d').date()
+    client.name = data['name']
+    client.company_name = data['company_name']
+    client.phone = data['phone']
+    client.email = data['email']
+    client.address_line = data['address_line']
+    client.city = data['city']
+    client.postal_code = data['postal_code']
+    client.province = data['province']
+    client.notes = data['notes']
+    client.save()

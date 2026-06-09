@@ -18,7 +18,7 @@ Referencia implementada: módulo **Clientes** en `contexts/private/`.
 | Listar / buscar | `clients-search.js` | `clients_search.py` |
 | Crear | `clients-create.js` | `clients_create.py` |
 | Eliminar | `clients-delete.js` | `clients_delete.py` |
-| Editar (futuro) | `clients-edit.js` | `clients_edit.py` |
+| Editar | `clients-edit.js` | `clients_edit.py` |
 
 Ubicación JS: `contexts/private/static/js/`
 Ubicación vistas: `contexts/private/views/` (un módulo por operación).
@@ -128,10 +128,13 @@ Lectura del token desde la cookie `csrftoken`.
 /private/clientes/buscar/       → API GET búsqueda
 /private/clientes/nuevo/        → formulario crear (HTML)
 /private/clientes/crear/        → API POST crear
+/private/clientes/<id>/editar/     → formulario editar (HTML)
+/private/clientes/<id>/detalle/   → API GET datos del formulario
+/private/clientes/<id>/actualizar/ → API POST actualizar
 /private/clientes/<id>/eliminar/ → API POST eliminar
 ```
 
-Para **editar** (futuro): `/nuevo/` + `/crear/` se sustituyen por `/editar/` + `/actualizar/` con el mismo patrón.
+Para **editar**: `/editar/` (HTML) + `/detalle/` (API GET datos) + `/actualizar/` (API POST), mismo patrón que crear (pestaña nueva, `opener`, `PrivateLoader`). Validación compartida en `clients-form-shared.js`.
 
 ## Templates y estilos
 

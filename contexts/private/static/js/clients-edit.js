@@ -1,13 +1,43 @@
+async function loadClientForEdit(form, errorBox) {
+    const detailUrl = form.dataset.detailUrl;
+
+    PrivateLoader.show('Cargando cliente...');
+
+    try {
+        const response = await fetch(detailUrl, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            ClientFormShared.populateForm(form, data.client);
+            return;
+        }
+
+        const errors = data.errors || ['No se pudo cargar el cliente.'];
+        ClientFormShared.showFormErrors(errorBox, errors);
+    } catch (error) {
+        ClientFormShared.showFormErrors(errorBox, ['Error de conexión. Inténtalo de nuevo.']);
+    } finally {
+        PrivateLoader.hide();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('client-create-form');
-    const errorBox = document.getElementById('client-create-errors');
-    const submitButton = document.getElementById('client-create-submit');
+    const form = document.getElementById('client-edit-form');
+    const errorBox = document.getElementById('client-edit-errors');
+    const submitButton = document.getElementById('client-edit-submit');
 
     if (!form || !errorBox) {
         return;
     }
 
-    const createUrl = form.dataset.createUrl;
+    const updateUrl = form.dataset.updateUrl;
+
+    loadClientForEdit(form, errorBox);
 
     form.addEventListener('submit', async function (event) {
         event.preventDefault();
@@ -26,10 +56,10 @@ document.addEventListener('DOMContentLoaded', function () {
             submitButton.classList.add('is-loading');
         }
 
-        PrivateLoader.show('Guardando cliente...');
+        PrivateLoader.show('Guardando cambios...');
 
         try {
-            const response = await fetch(createUrl, {
+            const response = await fetch(updateUrl, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': ClientFormShared.getCsrfToken(),
@@ -45,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            const errors = data.errors || ['No se pudo crear el cliente.'];
+            const errors = data.errors || ['No se pudo actualizar el cliente.'];
             ClientFormShared.showFormErrors(errorBox, errors);
         } catch (error) {
             ClientFormShared.showFormErrors(errorBox, ['Error de conexión. Inténtalo de nuevo.']);

@@ -1,3 +1,16 @@
+const EDIT_ICON_SVG = `
+    <svg
+        class="private-btn-edit__icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+    >
+        <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+    </svg>
+`;
+
 const DELETE_ICON_SVG = `
     <svg
         class="private-btn-delete__icon"
@@ -36,6 +49,14 @@ function buildClientRow(client) {
             ${renderCell(client.city)}
             <td>${escapeHtml(client.date)}</td>
             <td class="private-table__actions">
+                <button
+                    type="button"
+                    class="private-btn-edit"
+                    aria-label="Editar ${escapeHtml(client.name)}"
+                    data-edit-url="${escapeHtml(client.edit_url)}"
+                >
+                    ${EDIT_ICON_SVG}
+                </button>
                 <button
                     type="button"
                     class="private-btn-delete"
@@ -90,7 +111,22 @@ function updateClientsView(clients, hasFilters) {
     tableWrap.hidden = false;
     emptyMessage.hidden = true;
     tbody.innerHTML = clients.map(buildClientRow).join('');
+    bindClientEditButtons();
     bindClientDeleteButtons(listSection);
+}
+
+function bindClientEditButtons() {
+    document.querySelectorAll('.private-btn-edit').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const editUrl = button.dataset.editUrl;
+
+            if (!editUrl) {
+                return;
+            }
+
+            window.open(editUrl, '_blank');
+        });
+    });
 }
 
 function syncFormFromUrl(searchForm) {

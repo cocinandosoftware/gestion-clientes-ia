@@ -323,6 +323,36 @@ a {
     white-space: nowrap;
 }
 
+.private-table__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.private-btn-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    background: #eff6ff;
+    color: #1e40af;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.private-btn-edit:hover {
+    background: #dbeafe;
+    border-color: #93c5fd;
+}
+
+.private-btn-edit__icon {
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
 .private-btn-delete {
     display: inline-flex;
     align-items: center;
