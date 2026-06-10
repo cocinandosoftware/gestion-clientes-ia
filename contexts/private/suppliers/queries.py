@@ -35,7 +35,15 @@ def get_client_options():
     ]
 
 
-def get_filtered_suppliers(search_query, client_id_raw, date_from_raw, date_until_raw):
+def get_filtered_suppliers(
+    search_query,
+    client_id_raw,
+    date_from_raw,
+    date_until_raw,
+    order_by,
+    page,
+    page_size,
+):
     date_from = parse_date(date_from_raw)
     date_until = parse_date(date_until_raw)
     query_filter = Q()
@@ -63,9 +71,13 @@ def get_filtered_suppliers(search_query, client_id_raw, date_from_raw, date_unti
         query_filter &= Q(date__lte=date_until)
 
     has_filters = bool(search_query or client_id_raw or date_from or date_until)
-    suppliers = Supplier.objects.filter(query_filter).distinct()
+    queryset = Supplier.objects.filter(query_filter).distinct().order_by(order_by).prefetch_related('clients')
 
-    return suppliers, has_filters
+    from contexts.private.listing import paginate_queryset
+
+    suppliers, pagination = paginate_queryset(queryset, page, page_size)
+
+    return suppliers, has_filters, pagination
 
 
 CLIENTS_PREVIEW_LIMIT = 2

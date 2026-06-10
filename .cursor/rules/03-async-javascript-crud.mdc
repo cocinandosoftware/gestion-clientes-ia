@@ -37,7 +37,20 @@ Ubicación lógica de dominio: `contexts/private/clients/` (`queries.py`, `valid
 Ejemplo respuesta API listado/búsqueda:
 
 ```json
-{ "success": true, "clients": [...], "has_filters": false }
+{
+  "success": true,
+  "clients": [...],
+  "has_filters": false,
+  "pagination": {
+    "page": 1,
+    "page_size": 20,
+    "total_count": 150,
+    "total_pages": 8,
+    "has_previous": false,
+    "has_next": true
+  },
+  "sort": { "field": "name", "order": "asc" }
+}
 ```
 
 Ejemplo respuesta API crear:
@@ -46,14 +59,19 @@ Ejemplo respuesta API crear:
 { "success": true, "redirect_url": "/private/clientes/" }
 ```
 
-## Patrón listado + búsqueda
+## Patrón listado + búsqueda + paginación + ordenación
 
-1. Template con **filtros + tabla fija** (`thead` + `tbody` vacío). Sin `{% for %}` de registros.
-2. Al `DOMContentLoaded`, `loadClients()` hace `fetch` GET a la API de búsqueda.
-3. La API devuelve **JSON** (no HTML renderizado).
-4. JS genera las `<tr>` en el `tbody`.
-5. El submit del buscador llama a la misma `loadClients()`.
-6. Exponer `window.reloadClientList` para refrescar desde otras pestañas u operaciones.
+1. Template con **filtros + tabla fija** (`thead` sortable + `tbody` vacío). Sin `{% for %}` de registros.
+2. Formulario con campos ocultos: `sort`, `order`, `page`, `page_size`.
+3. Cabeceras ordenables: `<th data-sort-field="name">` + botón `.private-table__sort`.
+4. Barra de paginación: `.private-pagination` con Anterior / Siguiente.
+5. Al `DOMContentLoaded`, `load*()` hace `fetch` GET a la API con todos los parámetros del formulario.
+6. La API devuelve **JSON** con registros, `pagination` y `sort` (solo la página actual, no todo el dataset).
+7. JS genera las `<tr>` en el `tbody` y actualiza paginación / indicadores de orden.
+8. **Ordenar** o **buscar** resetea `page` a 1.
+9. Lógica compartida JS: `private-listing.js` (`PrivateListing.bindSortableHeaders`, `bindPagination`, `updatePaginationView`).
+10. Lógica compartida backend: `contexts/private/listing.py` (`parse_list_request_params`, `paginate_queryset`, mapas `CLIENT_SORT_FIELDS` / `SUPPLIER_SORT_FIELDS`).
+11. Exponer `window.reloadClientList` / `reloadSupplierList` para refrescar desde otras pestañas.
 
 ## Patrón eliminación
 
@@ -143,6 +161,7 @@ Para **editar**: `/editar/` (HTML) + `/detalle/` (API GET datos) + `/actualizar/
 * Templates privados: `templates/private/` (listado, create, edit…).
 * **CSS componentizado** (ver regla `02-ui-design-system.mdc`): `contexts/private/static/css/` con un archivo por componente; `private.css` es la única entrada (`@import` de `base`, `topbar`, `sidebar`, `layout`, `buttons`, `cards`, `forms`, `search`, `tables`, `tooltips`, `loader`). No crear CSS monolítico ni enlazar componentes desde HTML.
 * Tooltips reutilizables: `tooltips.css` + `private-tooltip.js`; marcar contenedor con `data-private-tooltip` y llamar `PrivateTooltip.bind()` tras insertar HTML dinámico.
+* Paginación y ordenación: `pagination.css` + `private-listing.js`; parámetros GET `sort`, `order`, `page`, `page_size`.
 * CSS/JS de cada CRUD: `contexts/private/<modulo>/static/` (auto-registrado vía `STATICFILES_DIRS` en `settings.py`).
 * Cargar JS en `{% block extra_js %}` del template que lo necesita.
 * Orden de scripts: operaciones base (delete) antes de search si search re-enlaza delete.

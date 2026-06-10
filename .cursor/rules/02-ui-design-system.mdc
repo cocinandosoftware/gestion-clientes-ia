@@ -95,7 +95,8 @@ contexts/private/static/css/
 ├── cards.css        ← tarjetas y estado vacío
 ├── forms.css        ← formularios crear/editar
 ├── search.css       ← buscador y filtros del listado
-├── tables.css       ← tablas y vista tarjeta en móvil
+├── tables.css       ← tablas, cabeceras ordenables y vista tarjeta en móvil
+├── pagination.css   ← barra de paginación de listados
 ├── tooltips.css     ← tooltips (panel flotante)
 └── loader.css       ← overlay de carga global
 ```
@@ -133,7 +134,8 @@ contexts/private/static/css/
 | Tarjetas / mensaje vacío | `cards.css` |
 | Formularios | `forms.css` |
 | Buscador y filtros | `search.css` |
-| Tablas / columna acciones | `tables.css` |
+| Tablas / ordenación / acciones | `tables.css` |
+| Paginación de listados | `pagination.css` + `private-listing.js` |
 | Tooltips | `tooltips.css` + `private-tooltip.js` |
 | Loader global | `loader.css` |
 | Reset / body | `base.css` |

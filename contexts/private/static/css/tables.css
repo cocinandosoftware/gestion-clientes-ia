@@ -29,6 +29,48 @@
     background: #f8fafc;
 }
 
+.private-table__sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: inherit;
+    cursor: pointer;
+}
+
+.private-table__sort:hover {
+    color: #2563eb;
+}
+
+.private-table__sort--active {
+    color: #1e40af;
+}
+
+.private-table__sort-icon {
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    opacity: 0.35;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.private-table__sort--active .private-table__sort-icon {
+    opacity: 1;
+}
+
+.private-table__sort--asc .private-table__sort-icon {
+    transform: rotate(180deg);
+}
+
 .private-table tbody tr:hover {
     background: #0b3b6a;
     color: #fff;

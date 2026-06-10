@@ -90,11 +90,12 @@ function showLoadError(message) {
     }
 }
 
-function updateClientsView(clients, hasFilters) {
+function updateClientsView(clients, hasFilters, pagination, sort, searchForm) {
     const tableWrap = document.getElementById('clients-table-wrap');
     const tbody = document.getElementById('clients-table-body');
     const emptyMessage = document.getElementById('clients-empty');
     const listSection = document.getElementById('clients-list');
+    const paginationEl = document.getElementById('clients-pagination');
 
     if (!tableWrap || !tbody || !emptyMessage) {
         return;
@@ -102,6 +103,9 @@ function updateClientsView(clients, hasFilters) {
 
     if (!clients.length) {
         tableWrap.hidden = true;
+        if (paginationEl) {
+            paginationEl.hidden = true;
+        }
         emptyMessage.textContent = hasFilters
             ? 'No se encontraron clientes con los filtros aplicados.'
             : 'No hay clientes registrados todavía.';
@@ -115,6 +119,29 @@ function updateClientsView(clients, hasFilters) {
     tbody.innerHTML = clients.map(buildClientRow).join('');
     bindClientEditButtons();
     bindClientDeleteButtons(listSection);
+
+    if (searchForm && pagination) {
+        const pageInput = searchForm.querySelector('[name="page"]');
+
+        if (pageInput) {
+            pageInput.value = String(pagination.page);
+        }
+    }
+
+    PrivateListing.updatePaginationView({
+        paginationId: 'clients-pagination',
+        infoId: 'clients-pagination-info',
+        prevId: 'clients-pagination-prev',
+        nextId: 'clients-pagination-next',
+        pagesId: 'clients-pagination-pages',
+        pageSizeSelectId: 'clients-page-size',
+        form: searchForm,
+        pagination,
+    });
+
+    if (sort) {
+        PrivateListing.updateSortIndicators('#clients-table', sort.field, sort.order);
+    }
 }
 
 function bindClientEditButtons() {
@@ -151,7 +178,13 @@ async function loadClients(listSection, searchForm, searchUrl, submitButton) {
 
         if (response.ok && data.success) {
             setHasFilters(listSection, data.has_filters);
-            updateClientsView(data.clients, data.has_filters);
+            updateClientsView(
+                data.clients,
+                data.has_filters,
+                data.pagination,
+                data.sort,
+                searchForm
+            );
             return;
         }
 
@@ -177,11 +210,31 @@ function bindClientSearchForm(listSection) {
         return;
     }
 
-    loadClients(listSection, searchForm, searchUrl, submitButton);
+    const reload = () => loadClients(listSection, searchForm, searchUrl, submitButton);
+
+    PrivateListing.bindSortableHeaders({
+        tableSelector: '#clients-table',
+        form: searchForm,
+        onSortChange: reload,
+    });
+
+    PrivateListing.bindPagination({
+        paginationId: 'clients-pagination',
+        infoId: 'clients-pagination-info',
+        prevId: 'clients-pagination-prev',
+        nextId: 'clients-pagination-next',
+        pagesId: 'clients-pagination-pages',
+        pageSizeSelectId: 'clients-page-size',
+        form: searchForm,
+        onPageChange: reload,
+    });
+
+    reload();
 
     searchForm.addEventListener('submit', async function (event) {
         event.preventDefault();
-        await loadClients(listSection, searchForm, searchUrl, submitButton);
+        PrivateListing.resetPage(searchForm);
+        await reload();
     });
 }
 

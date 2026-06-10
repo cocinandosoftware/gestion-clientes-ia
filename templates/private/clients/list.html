@@ -26,6 +26,11 @@
     data-search-url="{% url 'client_search' %}"
 >
     <form class="private-search" id="client-search-form" method="get" action="">
+        <input type="hidden" name="sort" value="name">
+        <input type="hidden" name="order" value="asc">
+        <input type="hidden" name="page" value="1">
+        <input type="hidden" name="page_size" value="20">
+
         <div class="private-search__field">
             <label for="client-search">Buscar clientes</label>
             <input
@@ -37,19 +42,11 @@
         </div>
         <div class="private-search__field private-search__field--date">
             <label for="date-from">Desde</label>
-            <input
-                id="date-from"
-                type="date"
-                name="date_from"
-            >
+            <input id="date-from" type="date" name="date_from">
         </div>
         <div class="private-search__field private-search__field--date">
             <label for="date-until">Hasta</label>
-            <input
-                id="date-until"
-                type="date"
-                name="date_until"
-            >
+            <input id="date-until" type="date" name="date_until">
         </div>
         <div class="private-search__actions">
             <button type="submit" class="private-btn private-btn--primary" id="client-search-submit">
@@ -60,22 +57,69 @@
 
     <div id="clients-results">
         <div class="private-table-wrap" id="clients-table-wrap" hidden>
-            <table class="private-table">
+            <table class="private-table" id="clients-table">
                 <thead>
                     <tr>
-                        <th>Nombre</th>
-                        <th>Razón social</th>
-                        <th>Email</th>
-                        <th>Teléfono</th>
-                        <th>Ciudad</th>
-                        <th>Fecha</th>
+                        <th data-sort-field="name">
+                            <button type="button" class="private-table__sort private-table__sort--active private-table__sort--asc">
+                                <span>Nombre</span>
+                                <span class="private-table__sort-icon" aria-hidden="true"></span>
+                            </button>
+                        </th>
+                        <th data-sort-field="company_name">
+                            <button type="button" class="private-table__sort">
+                                <span>Razón social</span>
+                                <span class="private-table__sort-icon" aria-hidden="true"></span>
+                            </button>
+                        </th>
+                        <th data-sort-field="email">
+                            <button type="button" class="private-table__sort">
+                                <span>Email</span>
+                                <span class="private-table__sort-icon" aria-hidden="true"></span>
+                            </button>
+                        </th>
+                        <th data-sort-field="phone">
+                            <button type="button" class="private-table__sort">
+                                <span>Teléfono</span>
+                                <span class="private-table__sort-icon" aria-hidden="true"></span>
+                            </button>
+                        </th>
+                        <th data-sort-field="city">
+                            <button type="button" class="private-table__sort">
+                                <span>Ciudad</span>
+                                <span class="private-table__sort-icon" aria-hidden="true"></span>
+                            </button>
+                        </th>
+                        <th data-sort-field="date">
+                            <button type="button" class="private-table__sort">
+                                <span>Fecha</span>
+                                <span class="private-table__sort-icon" aria-hidden="true"></span>
+                            </button>
+                        </th>
                         <th class="private-table__actions-head">Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="clients-table-body">
-                    
-                </tbody>
+                <tbody id="clients-table-body"></tbody>
             </table>
+        </div>
+        <div id="clients-pagination" class="private-pagination" hidden>
+            <p class="private-pagination__info" id="clients-pagination-info"></p>
+            <div class="private-pagination__controls">
+                <div class="private-pagination__page-size">
+                    <label for="clients-page-size">Por página</label>
+                    <select id="clients-page-size" aria-label="Elementos por página">
+                        <option value="10">10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <nav class="private-pagination__nav" aria-label="Paginación de clientes">
+                    <button type="button" class="private-btn private-pagination__nav-btn" id="clients-pagination-prev" disabled>Anterior</button>
+                    <div class="private-pagination__pages" id="clients-pagination-pages"></div>
+                    <button type="button" class="private-btn private-pagination__nav-btn" id="clients-pagination-next" disabled>Siguiente</button>
+                </nav>
+            </div>
         </div>
         <p id="clients-empty" class="private-empty" hidden></p>
     </div>
@@ -83,6 +127,7 @@
 {% endblock %}
 
 {% block extra_js %}
+    <script src="{% static 'js/private-listing.js' %}"></script>
     <script src="{% static 'js/clients-delete.js' %}"></script>
     <script src="{% static 'js/clients-search.js' %}"></script>
 {% endblock %}

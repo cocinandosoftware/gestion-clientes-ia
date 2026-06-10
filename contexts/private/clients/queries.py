@@ -15,7 +15,14 @@ def parse_date(value):
         return None
 
 
-def get_filtered_clients(search_query, date_from_raw, date_until_raw):
+def get_filtered_clients(
+    search_query,
+    date_from_raw,
+    date_until_raw,
+    order_by,
+    page,
+    page_size,
+):
     date_from = parse_date(date_from_raw)
     date_until = parse_date(date_until_raw)
     query_filter = Q()
@@ -36,9 +43,13 @@ def get_filtered_clients(search_query, date_from_raw, date_until_raw):
         query_filter &= Q(date__lte=date_until)
 
     has_filters = bool(search_query or date_from or date_until)
-    clients = Client.objects.filter(query_filter)
+    queryset = Client.objects.filter(query_filter).order_by(order_by)
 
-    return clients, has_filters
+    from contexts.private.listing import paginate_queryset
+
+    clients, pagination = paginate_queryset(queryset, page, page_size)
+
+    return clients, has_filters, pagination
 
 
 def serialize_client(client):

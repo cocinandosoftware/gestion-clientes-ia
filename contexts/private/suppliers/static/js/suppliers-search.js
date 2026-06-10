@@ -138,11 +138,12 @@ function populateClientFilter(select, clientOptions, selectedValue) {
     select.innerHTML = `<option value="">Todos los clientes</option>${optionsHtml}`;
 }
 
-function updateSuppliersView(suppliers, hasFilters) {
+function updateSuppliersView(suppliers, hasFilters, pagination, sort, searchForm) {
     const tableWrap = document.getElementById('suppliers-table-wrap');
     const tbody = document.getElementById('suppliers-table-body');
     const emptyMessage = document.getElementById('suppliers-empty');
     const listSection = document.getElementById('suppliers-list');
+    const paginationEl = document.getElementById('suppliers-pagination');
 
     if (!tableWrap || !tbody || !emptyMessage) {
         return;
@@ -150,6 +151,9 @@ function updateSuppliersView(suppliers, hasFilters) {
 
     if (!suppliers.length) {
         tableWrap.hidden = true;
+        if (paginationEl) {
+            paginationEl.hidden = true;
+        }
         emptyMessage.textContent = hasFilters
             ? 'No se encontraron proveedores con los filtros aplicados.'
             : 'No hay proveedores registrados todavía.';
@@ -164,6 +168,29 @@ function updateSuppliersView(suppliers, hasFilters) {
     bindSupplierEditButtons();
     bindSupplierDeleteButtons(listSection);
     PrivateTooltip.bind(tbody);
+
+    if (searchForm && pagination) {
+        const pageInput = searchForm.querySelector('[name="page"]');
+
+        if (pageInput) {
+            pageInput.value = String(pagination.page);
+        }
+    }
+
+    PrivateListing.updatePaginationView({
+        paginationId: 'suppliers-pagination',
+        infoId: 'suppliers-pagination-info',
+        prevId: 'suppliers-pagination-prev',
+        nextId: 'suppliers-pagination-next',
+        pagesId: 'suppliers-pagination-pages',
+        pageSizeSelectId: 'suppliers-page-size',
+        form: searchForm,
+        pagination,
+    });
+
+    if (sort) {
+        PrivateListing.updateSortIndicators('#suppliers-table', sort.field, sort.order);
+    }
 }
 
 function bindSupplierEditButtons() {
@@ -203,7 +230,13 @@ async function loadSuppliers(listSection, searchForm, searchUrl, submitButton) {
             populateClientFilter(clientSelect, data.client_options || [], clientSelect?.value);
 
             setHasFilters(listSection, data.has_filters);
-            updateSuppliersView(data.suppliers, data.has_filters);
+            updateSuppliersView(
+                data.suppliers,
+                data.has_filters,
+                data.pagination,
+                data.sort,
+                searchForm
+            );
             return;
         }
 
@@ -229,11 +262,31 @@ function bindSupplierSearchForm(listSection) {
         return;
     }
 
-    loadSuppliers(listSection, searchForm, searchUrl, submitButton);
+    const reload = () => loadSuppliers(listSection, searchForm, searchUrl, submitButton);
+
+    PrivateListing.bindSortableHeaders({
+        tableSelector: '#suppliers-table',
+        form: searchForm,
+        onSortChange: reload,
+    });
+
+    PrivateListing.bindPagination({
+        paginationId: 'suppliers-pagination',
+        infoId: 'suppliers-pagination-info',
+        prevId: 'suppliers-pagination-prev',
+        nextId: 'suppliers-pagination-next',
+        pagesId: 'suppliers-pagination-pages',
+        pageSizeSelectId: 'suppliers-page-size',
+        form: searchForm,
+        onPageChange: reload,
+    });
+
+    reload();
 
     searchForm.addEventListener('submit', async function (event) {
         event.preventDefault();
-        await loadSuppliers(listSection, searchForm, searchUrl, submitButton);
+        PrivateListing.resetPage(searchForm);
+        await reload();
     });
 }
 
