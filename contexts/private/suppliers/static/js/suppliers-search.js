@@ -39,6 +39,38 @@ function renderCell(value, label) {
     return `<td data-label="${escapeHtml(label)}"><span class="private-table__muted">—</span></td>`;
 }
 
+function renderClientsCell(supplier) {
+    const label = supplier.clients_label;
+
+    if (!label) {
+        return `<td class="private-table__cell--clients" data-label="Clientes"><span class="private-table__muted">—</span></td>`;
+    }
+
+    const tooltip = supplier.clients_tooltip || '';
+
+    if (!tooltip) {
+        return `
+            <td class="private-table__cell--clients" data-label="Clientes">
+                <span class="private-tooltip">
+                    <span class="private-tooltip__trigger private-tooltip__trigger--static">${escapeHtml(label)}</span>
+                </span>
+            </td>
+        `;
+    }
+
+    return `
+        <td class="private-table__cell--clients" data-label="Clientes">
+            <span class="private-tooltip private-tooltip--interactive" data-private-tooltip>
+                <button type="button" class="private-tooltip__trigger">${escapeHtml(label)}</button>
+                <div class="private-tooltip__panel" hidden role="tooltip">
+                    <span class="private-tooltip__title">Clientes asociados</span>
+                    <span class="private-tooltip__text">${escapeHtml(tooltip)}</span>
+                </div>
+            </span>
+        </td>
+    `;
+}
+
 function buildSupplierRow(supplier) {
     return `
         <tr>
@@ -47,7 +79,7 @@ function buildSupplierRow(supplier) {
             ${renderCell(supplier.email, 'Email')}
             ${renderCell(supplier.phone, 'Teléfono')}
             ${renderCell(supplier.city, 'Ciudad')}
-            ${renderCell(supplier.clients_label, 'Clientes')}
+            ${renderClientsCell(supplier)}
             <td data-label="Fecha">${escapeHtml(supplier.date)}</td>
             <td class="private-table__actions" data-label="Acciones">
                 <div class="private-table__actions-inner">
@@ -131,6 +163,7 @@ function updateSuppliersView(suppliers, hasFilters) {
     tbody.innerHTML = suppliers.map(buildSupplierRow).join('');
     bindSupplierEditButtons();
     bindSupplierDeleteButtons(listSection);
+    PrivateTooltip.bind(tbody);
 }
 
 function bindSupplierEditButtons() {

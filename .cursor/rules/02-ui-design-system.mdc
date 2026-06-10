@@ -73,14 +73,89 @@ Referencia obligatoria al crear o modificar interfaces: `templates/public/`, `te
 
 ## Convenciones de clases
 
-* Prefijo por página: `home-*`, `login-*`
-* Modificadores con `--`: `home-btn--primary`, `home-btn--ghost`
-* Elementos con `__`: `home-hero__content`, `login-card__header`
+* Área pública: prefijo por página `home-*`, `login-*`
+* Área privada: prefijo global `private-*` (ej. `private-btn`, `private-table`)
+* Modificadores con `--`: `private-btn--primary`, `private-search__field--date`
+* Elementos con `__`: `private-topbar__brand`, `private-form__field`
+
+## CSS componentizado del área privada (obligatorio)
+
+El CSS del área privada **no** se concentra en un solo archivo monolítico. Se organiza por **componentes independientes**, cada uno en su propio archivo.
+
+### Ubicación
+
+```
+contexts/private/static/css/
+├── private.css      ← ÚNICA entrada cargada en templates (solo @import)
+├── base.css         ← reset, html, body, enlaces
+├── topbar.css       ← barra superior
+├── sidebar.css      ← menú lateral y navegación
+├── layout.css       ← grid, main, cabecera de página
+├── buttons.css      ← botones (primario, editar, eliminar)
+├── cards.css        ← tarjetas y estado vacío
+├── forms.css        ← formularios crear/editar
+├── search.css       ← buscador y filtros del listado
+├── tables.css       ← tablas y vista tarjeta en móvil
+├── tooltips.css     ← tooltips (panel flotante)
+└── loader.css       ← overlay de carga global
+```
+
+### Reglas de componentización
+
+1. **Un componente = un archivo.** No mezclar estilos de topbar y tablas en el mismo CSS.
+2. **`private.css` solo importa.** No añadir reglas CSS directamente en `private.css` salvo el bloque de `@import`.
+3. **Templates cargan solo `private.css`:**
+
+   ```html
+   <link rel="stylesheet" href="{% static 'css/private.css' %}">
+   ```
+
+   Definido en `templates/private/base_private.html`. No enlazar componentes individuales desde HTML.
+
+4. **Media queries dentro del componente** que afectan, al final del mismo archivo (no un `responsive.css` global).
+5. **Breakpoints del área privada:**
+   * `900px` — sidebar horizontal, formulario 1 columna
+   * `768px` — móvil: filtros apilados, tablas como tarjetas, botones a ancho completo
+   * `480px` — ajustes finos (nav vertical, topbar apilada)
+
+6. **CSS específico de un módulo CRUD** (solo si no reutiliza componentes globales): `contexts/private/<modulo>/static/css/`. Cargar en el template del módulo con `{% block extra_head %}`.
+
+7. **Nuevo componente global:** crear `contexts/private/static/css/<nombre>.css` y añadir `@import url('<nombre>.css');` en `private.css`.
+
+### Mapa rápido: qué archivo tocar
+
+| Quieres cambiar… | Archivo |
+|------------------|---------|
+| Barra superior / logout | `topbar.css` |
+| Menú lateral | `sidebar.css` |
+| Estructura página / cabecera | `layout.css` |
+| Botones | `buttons.css` |
+| Tarjetas / mensaje vacío | `cards.css` |
+| Formularios | `forms.css` |
+| Buscador y filtros | `search.css` |
+| Tablas / columna acciones | `tables.css` |
+| Tooltips | `tooltips.css` + `private-tooltip.js` |
+| Loader global | `loader.css` |
+| Reset / body | `base.css` |
+
+### Tablas responsivas
+
+* Desktop: tabla clásica con scroll horizontal si hace falta.
+* Móvil (`≤768px`): filas como tarjetas; celdas con `data-label` generado en JS.
+* Columnas con mucho texto: resumen + `title` para detalle (ej. clientes de proveedor).
 
 ## Al crear nuevas pantallas
 
+### Área pública
+
 1. Reutilizar paleta, botones, tarjetas y espaciados de `home.css` / `login.css`.
-2. Mantener coherencia visual con home y login.
-3. Colocar CSS en `contexts/public/static/css/`, `contexts/private/static/css/<componente>.css` o `contexts/private/<modulo>/static/css/`.
-4. Referenciar con `{% static 'css/nombre.css' %}`.
+2. Colocar CSS en `contexts/public/static/css/`.
+3. Referenciar con `{% static 'css/nombre.css' %}`.
+
+### Área privada
+
+1. Reutilizar componentes existentes en `contexts/private/static/css/` (no duplicar `.private-btn`, `.private-card`, etc.).
+2. Si el estilo es **global** del área privada → añadir al componente correcto o crear uno nuevo + `@import`.
+3. Si el estilo es **solo de un módulo** → `contexts/private/<modulo>/static/css/`.
+4. Mantener coherencia con la paleta y convenciones `private-*`.
 5. No introducir estilos discordantes (colores, bordes cuadrados, sombras duras, tipografías distintas).

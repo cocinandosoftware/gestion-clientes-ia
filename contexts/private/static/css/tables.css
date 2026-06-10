@@ -38,6 +38,10 @@
     color: #94a3b8;
 }
 
+.private-table__cell--clients {
+    max-width: 11rem;
+}
+
 .private-table__actions-head,
 .private-table__actions {
     text-align: right;
@@ -137,6 +141,10 @@
     .private-table__actions-inner {
         flex: 1;
         justify-content: flex-end;
+    }
+
+    .private-table__cell--clients {
+        max-width: none;
     }
 }
 

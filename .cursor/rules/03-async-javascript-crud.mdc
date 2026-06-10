@@ -141,7 +141,8 @@ Para **editar**: `/editar/` (HTML) + `/detalle/` (API GET datos) + `/actualizar/
 ## Templates y estilos
 
 * Templates privados: `templates/private/` (listado, create, edit…).
-* CSS global del área privada: `contexts/private/static/css/` (`private.css` importa componentes: `base`, `topbar`, `sidebar`, `layout`, `buttons`, `cards`, `forms`, `search`, `tables`, `loader`).
+* **CSS componentizado** (ver regla `02-ui-design-system.mdc`): `contexts/private/static/css/` con un archivo por componente; `private.css` es la única entrada (`@import` de `base`, `topbar`, `sidebar`, `layout`, `buttons`, `cards`, `forms`, `search`, `tables`, `tooltips`, `loader`). No crear CSS monolítico ni enlazar componentes desde HTML.
+* Tooltips reutilizables: `tooltips.css` + `private-tooltip.js`; marcar contenedor con `data-private-tooltip` y llamar `PrivateTooltip.bind()` tras insertar HTML dinámico.
 * CSS/JS de cada CRUD: `contexts/private/<modulo>/static/` (auto-registrado vía `STATICFILES_DIRS` en `settings.py`).
 * Cargar JS en `{% block extra_js %}` del template que lo necesita.
 * Orden de scripts: operaciones base (delete) antes de search si search re-enlaza delete.
@@ -157,3 +158,4 @@ Replicar la misma estructura:
 5. Un JS por operación async en `contexts/private/<entidad>/static/js/`.
 6. `PrivateLoader` en cada `fetch` del módulo.
 7. Una fase por operación (listar → buscar → crear → editar → eliminar).
+8. Estilos: reutilizar componentes CSS globales (`private-*`); estilos nuevos globales en el archivo de componente adecuado, no en `private.css` directamente.

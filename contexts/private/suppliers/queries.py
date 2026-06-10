@@ -68,8 +68,40 @@ def get_filtered_suppliers(search_query, client_id_raw, date_from_raw, date_unti
     return suppliers, has_filters
 
 
+CLIENTS_PREVIEW_LIMIT = 2
+
+
+def format_clients_display(client_names, max_preview=CLIENTS_PREVIEW_LIMIT):
+    if not client_names:
+        return {
+            'clients_label': '',
+            'clients_tooltip': '',
+            'clients_count': 0,
+        }
+
+    full_label = ', '.join(client_names)
+    count = len(client_names)
+
+    if count <= max_preview:
+        return {
+            'clients_label': full_label,
+            'clients_tooltip': '',
+            'clients_count': count,
+        }
+
+    preview = ', '.join(client_names[:max_preview])
+    remaining = count - max_preview
+
+    return {
+        'clients_label': f'{preview} y {remaining} más',
+        'clients_tooltip': full_label,
+        'clients_count': count,
+    }
+
+
 def serialize_supplier(supplier):
     client_names = list(supplier.clients.order_by('name').values_list('name', flat=True))
+    clients_display = format_clients_display(client_names)
 
     return {
         'id': supplier.id,
@@ -79,7 +111,7 @@ def serialize_supplier(supplier):
         'phone': supplier.phone,
         'city': supplier.city,
         'date': supplier.date.strftime('%d/%m/%Y'),
-        'clients_label': ', '.join(client_names),
+        **clients_display,
         'edit_url': reverse('supplier_edit', args=[supplier.id]),
         'delete_url': reverse('supplier_delete', args=[supplier.id]),
     }
