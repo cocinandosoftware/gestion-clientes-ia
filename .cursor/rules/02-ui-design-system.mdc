@@ -11,7 +11,8 @@ Referencia obligatoria al crear o modificar interfaces: `templates/public/`, `te
 ## Principios
 
 * Páginas públicas principales (`home`, `login`) son HTML **independientes** (no extienden `base.html`).
-* CSS dedicado por página en `contexts/public/static/css/`, `contexts/private/static/css/` (global privado) o `contexts/private/<modulo>/static/css/` (módulo CRUD).
+* CSS dedicado por página en `contexts/public/static/css/` o `contexts/private/<modulo>/static/css/` (módulo CRUD).
+* CSS global del área privada componentizado en `contexts/private/static/css/` (un archivo por componente, importados desde `private.css`).
 * Vanilla CSS. Sin frameworks frontend.
 * Estilo profesional, limpio, con mucho aire, tipografía clara y acentos azules.
 
@@ -80,6 +81,6 @@ Referencia obligatoria al crear o modificar interfaces: `templates/public/`, `te
 
 1. Reutilizar paleta, botones, tarjetas y espaciados de `home.css` / `login.css`.
 2. Mantener coherencia visual con home y login.
-3. Colocar CSS en `contexts/public/static/css/`, `contexts/private/static/css/` o `contexts/private/<modulo>/static/css/`.
+3. Colocar CSS en `contexts/public/static/css/`, `contexts/private/static/css/<componente>.css` o `contexts/private/<modulo>/static/css/`.
 4. Referenciar con `{% static 'css/nombre.css' %}`.
 5. No introducir estilos discordantes (colores, bordes cuadrados, sombras duras, tipografías distintas).

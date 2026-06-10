@@ -141,7 +141,7 @@ Para **editar**: `/editar/` (HTML) + `/detalle/` (API GET datos) + `/actualizar/
 ## Templates y estilos
 
 * Templates privados: `templates/private/` (listado, create, edit…).
-* CSS global del área privada: `contexts/private/static/css/private.css`.
+* CSS global del área privada: `contexts/private/static/css/` (`private.css` importa componentes: `base`, `topbar`, `sidebar`, `layout`, `buttons`, `cards`, `forms`, `search`, `tables`, `loader`).
 * CSS/JS de cada CRUD: `contexts/private/<modulo>/static/` (auto-registrado vía `STATICFILES_DIRS` en `settings.py`).
 * Cargar JS en `{% block extra_js %}` del template que lo necesita.
 * Orden de scripts: operaciones base (delete) antes de search si search re-enlaza delete.

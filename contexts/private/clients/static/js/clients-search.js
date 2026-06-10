@@ -31,24 +31,24 @@ function escapeHtml(value) {
     return element.innerHTML;
 }
 
-function renderCell(value) {
+function renderCell(value, label) {
     if (value) {
-        return `<td>${escapeHtml(value)}</td>`;
+        return `<td data-label="${escapeHtml(label)}">${escapeHtml(value)}</td>`;
     }
 
-    return '<td><span class="private-table__muted">—</span></td>';
+    return `<td data-label="${escapeHtml(label)}"><span class="private-table__muted">—</span></td>`;
 }
 
 function buildClientRow(client) {
     return `
         <tr>
-            <td>${escapeHtml(client.name)}</td>
-            ${renderCell(client.company_name)}
-            ${renderCell(client.email)}
-            ${renderCell(client.phone)}
-            ${renderCell(client.city)}
-            <td>${escapeHtml(client.date)}</td>
-            <td class="private-table__actions">
+            <td data-label="Nombre">${escapeHtml(client.name)}</td>
+            ${renderCell(client.company_name, 'Razón social')}
+            ${renderCell(client.email, 'Email')}
+            ${renderCell(client.phone, 'Teléfono')}
+            ${renderCell(client.city, 'Ciudad')}
+            <td data-label="Fecha">${escapeHtml(client.date)}</td>
+            <td class="private-table__actions" data-label="Acciones">
                 <div class="private-table__actions-inner">
                     <button
                         type="button"

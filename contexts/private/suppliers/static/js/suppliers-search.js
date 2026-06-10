@@ -31,25 +31,25 @@ function escapeHtml(value) {
     return element.innerHTML;
 }
 
-function renderCell(value) {
+function renderCell(value, label) {
     if (value) {
-        return `<td>${escapeHtml(value)}</td>`;
+        return `<td data-label="${escapeHtml(label)}">${escapeHtml(value)}</td>`;
     }
 
-    return '<td><span class="private-table__muted">—</span></td>';
+    return `<td data-label="${escapeHtml(label)}"><span class="private-table__muted">—</span></td>`;
 }
 
 function buildSupplierRow(supplier) {
     return `
         <tr>
-            <td>${escapeHtml(supplier.name)}</td>
-            ${renderCell(supplier.company_name)}
-            ${renderCell(supplier.email)}
-            ${renderCell(supplier.phone)}
-            ${renderCell(supplier.city)}
-            ${renderCell(supplier.clients_label)}
-            <td>${escapeHtml(supplier.date)}</td>
-            <td class="private-table__actions">
+            <td data-label="Nombre">${escapeHtml(supplier.name)}</td>
+            ${renderCell(supplier.company_name, 'Razón social')}
+            ${renderCell(supplier.email, 'Email')}
+            ${renderCell(supplier.phone, 'Teléfono')}
+            ${renderCell(supplier.city, 'Ciudad')}
+            ${renderCell(supplier.clients_label, 'Clientes')}
+            <td data-label="Fecha">${escapeHtml(supplier.date)}</td>
+            <td class="private-table__actions" data-label="Acciones">
                 <div class="private-table__actions-inner">
                     <button
                         type="button"

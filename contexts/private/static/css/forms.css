@@ -1,0 +1,117 @@
+/* Componente: formularios (crear / editar) */
+
+.private-form__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.private-form__field {
+    display: flex;
+    flex-direction: column;
+}
+
+.private-form__field--full {
+    grid-column: 1 / -1;
+}
+
+.private-form__field label {
+    margin-bottom: 0.35rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.private-form__field input,
+.private-form__field textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 0.9375rem;
+    color: #0f172a;
+    background: #fff;
+    font-family: inherit;
+}
+
+.private-form__field input:focus,
+.private-form__field textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.private-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.private-form-errors {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.private-form__group-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.private-form__checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem 1rem;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.private-form__checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    color: #334155;
+}
+
+.private-form__empty-options {
+    color: #64748b;
+    font-size: 0.9375rem;
+}
+
+@media (max-width: 900px) {
+    .private-form__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .private-form__checkbox-group {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .private-form__actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .private-form__actions .private-btn {
+        width: 100%;
+    }
+
+    .private-form__field input,
+    .private-form__field textarea {
+        font-size: 16px;
+    }
+}
