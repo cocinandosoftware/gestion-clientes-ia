@@ -4,14 +4,39 @@ const PrivateLoader = {
     defaultMessage: 'Cargando...',
 
     init() {
-        this.element = document.getElementById('private-loader');
-        this.textElement = document.getElementById('private-loader-text');
+        if (this.element) {
+            return;
+        }
+
+        const existing = document.getElementById('private-loader');
+
+        if (existing) {
+            this.element = existing;
+            this.textElement = document.getElementById('private-loader-text');
+            return;
+        }
+
+        const overlay = document.createElement('div');
+        overlay.id = 'private-loader';
+        overlay.className = 'private-loader-overlay';
+        overlay.hidden = true;
+        overlay.setAttribute('role', 'status');
+        overlay.setAttribute('aria-live', 'polite');
+        overlay.setAttribute('aria-busy', 'false');
+        overlay.innerHTML = `
+            <div class="private-loader__content">
+                <div class="private-loader__spinner" aria-hidden="true"></div>
+                <p id="private-loader-text" class="private-loader__text">${this.defaultMessage}</p>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        this.element = overlay;
+        this.textElement = overlay.querySelector('#private-loader-text');
     },
 
     show(message) {
-        if (!this.element) {
-            this.init();
-        }
+        this.init();
 
         if (!this.element) {
             return;
@@ -27,9 +52,7 @@ const PrivateLoader = {
     },
 
     hide() {
-        if (!this.element) {
-            this.init();
-        }
+        this.init();
 
         if (!this.element) {
             return;
@@ -42,3 +65,9 @@ const PrivateLoader = {
 };
 
 window.PrivateLoader = PrivateLoader;
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => PrivateLoader.init());
+} else {
+    PrivateLoader.init();
+}

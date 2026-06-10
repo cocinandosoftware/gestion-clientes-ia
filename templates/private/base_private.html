@@ -52,21 +52,12 @@
         </main>
     </div>
 
-    <div
-        id="private-loader"
-        class="private-loader-overlay"
-        hidden
-        role="status"
-        aria-live="polite"
-        aria-busy="false"
-    >
-        <div class="private-loader__content">
-            <div class="private-loader__spinner" aria-hidden="true"></div>
-            <p id="private-loader-text" class="private-loader__text">Cargando...</p>
-        </div>
-    </div>
-
+    <!-- Scripts globales -->
+    <script src="{% static 'js/private-listing.js' %}"></script>
+    <script src="{% static 'js/private-tooltip.js' %}"></script>
     <script src="{% static 'js/private-loader.js' %}"></script>
+
+    <!-- Scripts específicos -->
     {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -98,7 +98,7 @@ Ejemplo respuesta API crear:
 
 **Regla:** cualquier `fetch` del área privada (listar, buscar, crear, editar, eliminar) debe usar `PrivateLoader`. No crear loaders locales ni duplicar HTML/CSS de carga.
 
-* HTML del overlay en `base_private.html` (`#private-loader`).
+* HTML del overlay inyectado por `private-loader.js` al cargar (`#private-loader`).
 * Objeto global: `window.PrivateLoader` en `contexts/private/static/js/private-loader.js` (estáticos globales del área privada).
 * **No** volver a implementar `showLoader` / `hideLoader` en módulos concretos.
 

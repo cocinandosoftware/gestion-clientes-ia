@@ -1,4 +1,5 @@
 const PrivateTooltip = {
+    
     bind(root = document) {
         const tooltips = root.querySelectorAll('[data-private-tooltip]');
 
@@ -38,7 +39,7 @@ const PrivateTooltip = {
                 top = triggerRect.top - panelRect.height - margin;
                 panel.classList.add('is-above');
             }
-
+            
             panel.style.top = `${top}px`;
             panel.style.left = `${left}px`;
         };
