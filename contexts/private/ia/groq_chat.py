@@ -36,14 +36,18 @@ def _create_completion(client, messages, tools=None):
         raise GroqChatError('No se pudo obtener respuesta de Groq.') from error
 
 
-def process_clients_prompt(user_message):
-    
+def process_clients_prompt(user_message, conversation_history=None):
     client = _get_groq_client()
 
-    messages = [
-        {'role': 'system', 'content': CLIENT_SYSTEM_PROMPT},
-        {'role': 'user', 'content': user_message},
-    ]
+    messages = [{'role': 'system', 'content': CLIENT_SYSTEM_PROMPT}]
+
+    for entry in conversation_history or []:
+        messages.append({
+            'role': entry['role'],
+            'content': entry['content'],
+        })
+
+    messages.append({'role': 'user', 'content': user_message})
 
     first_completion = _create_completion(client, messages, tools=CLIENT_TOOLS)
     assistant_message = first_completion.choices[0].message

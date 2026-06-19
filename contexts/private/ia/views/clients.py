@@ -3,13 +3,14 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
 from contexts.private.ia.groq_chat import GroqChatError, process_clients_prompt
-from contexts.private.ia.validation import validate_ai_prompt
+from contexts.private.ia.validation import parse_conversation_history, validate_ai_prompt
 
 
 @login_required
 @require_POST
 def ai_clients_prompt_api_view(request):
     message = request.POST.get('message', '').strip()
+    history = parse_conversation_history(request.POST.get('history', ''))
 
     errors = validate_ai_prompt(message)
     if errors:
@@ -19,7 +20,7 @@ def ai_clients_prompt_api_view(request):
         }, status=400)
 
     try:
-        result = process_clients_prompt(message)
+        result = process_clients_prompt(message, history)
     except GroqChatError as error:
         return JsonResponse({
             'success': False,

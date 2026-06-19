@@ -8,6 +8,11 @@ const PrivateAiPrompt = {
     submitButton: null,
     hintElement: null,
     messageField: null,
+    conversationHistory: [],
+
+    resetConversation() {
+        this.conversationHistory = [];
+    },
 
     getCsrfToken() {
         const cookieValue = document.cookie
@@ -63,6 +68,7 @@ const PrivateAiPrompt = {
         }
 
         this.openButton = button;
+        this.resetConversation();
         this.configureFromButton(button);
         this.hideFeedback(this.errorBox);
         this.hideFeedback(this.successBox);
@@ -135,6 +141,7 @@ const PrivateAiPrompt = {
             try {
                 const formData = new FormData();
                 formData.append('message', message);
+                formData.append('history', JSON.stringify(this.conversationHistory));
 
                 const response = await fetch(promptUrl, {
                     method: 'POST',
@@ -148,8 +155,19 @@ const PrivateAiPrompt = {
                 const data = await response.json();
 
                 if (response.ok && data.success) {
+                    this.conversationHistory.push({
+                        role: 'user',
+                        content: message,
+                    });
+                    this.conversationHistory.push({
+                        role: 'assistant',
+                        content: data.message || '',
+                    });
+
                     if (this.messageField) {
                         this.messageField.value = '';
+                        this.messageField.placeholder = 'Escribe tu respuesta...';
+                        this.messageField.focus();
                     }
 
                     this.showFeedback(
