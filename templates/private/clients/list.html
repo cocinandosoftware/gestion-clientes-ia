@@ -9,14 +9,38 @@
         <h1>Clientes</h1>
         <p>Listado de clientes registrados en el sistema.</p>
     </div>
-    <button
-        type="button"
-        id="client-new-button"
-        class="private-btn private-btn--primary"
-        data-create-url="{% url 'client_create' %}"
-    >
-        Nuevo
-    </button>
+    <div class="private-page-header__actions">
+        <button
+            type="button"
+            class="private-btn private-btn--ai private-ai-prompt__open"
+            data-prompt-url="{% url 'ai_clients_prompt' %}"
+            data-prompt-placeholder="Ejemplo: Busca clientes de Madrid creados este mes..."
+            data-prompt-hint="Escribe una instrucción en lenguaje natural sobre clientes. Por ahora solo confirmaremos la recepción del mensaje."
+            aria-controls="private-ai-prompt"
+            aria-expanded="false"
+        >
+            <svg
+                class="private-btn--ai__icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+            >
+                <path d="M12 3l1.9 5.8H20l-4.8 3.5 1.8 5.7L12 14.5 7 17.9l1.8-5.7L4 8.8h6.1L12 3z"/>
+                <path d="M5 19h14"/>
+            </svg>
+            Inteligencia artificial
+        </button>
+        <button
+            type="button"
+            id="client-new-button"
+            class="private-btn private-btn--primary"
+            data-create-url="{% url 'client_create' %}"
+        >
+            Nuevo
+        </button>
+    </div>
 </header>
 
 <section

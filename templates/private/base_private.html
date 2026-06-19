@@ -52,10 +52,13 @@
         </main>
     </div>
 
+    {% include 'private/components/ai_prompt.html' %}
+
     <!-- Scripts globales -->
     <script src="{% static 'js/private-listing.js' %}"></script>
     <script src="{% static 'js/private-tooltip.js' %}"></script>
     <script src="{% static 'js/private-loader.js' %}"></script>
+    <script src="{% static 'js/private-ai-prompt.js' %}"></script>
 
     <!-- Scripts específicos -->
     {% block extra_js %}{% endblock %}

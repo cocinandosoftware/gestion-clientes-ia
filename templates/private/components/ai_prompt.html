@@ -1,0 +1,53 @@
+<div
+    id="private-ai-prompt"
+    class="private-ai-prompt"
+    hidden
+    role="dialog"
+    aria-labelledby="private-ai-prompt-title"
+    aria-modal="false"
+>
+    <div class="private-ai-prompt__panel">
+        <header class="private-ai-prompt__header">
+            <div>
+                <p class="private-ai-prompt__eyebrow">Asistente IA</p>
+                <h2 id="private-ai-prompt-title" class="private-ai-prompt__title">¿En qué puedo ayudarte?</h2>
+            </div>
+            <button
+                type="button"
+                id="private-ai-prompt-close"
+                class="private-ai-prompt__close"
+                aria-label="Cerrar asistente de inteligencia artificial"
+            >
+                ×
+            </button>
+        </header>
+
+        <div class="private-ai-prompt__body">
+            <form id="private-ai-prompt-form">
+                <div class="private-ai-prompt__field">
+                    <label for="private-ai-prompt-message">Tu mensaje</label>
+                    <textarea
+                        id="private-ai-prompt-message"
+                        name="message"
+                        class="private-ai-prompt__textarea"
+                        rows="5"
+                        placeholder="Escribe tu instrucción en lenguaje natural..."
+                        required
+                    ></textarea>
+                    <p id="private-ai-prompt-hint" class="private-ai-prompt__hint">
+                        Escribe una instrucción en lenguaje natural. Por ahora solo confirmaremos la recepción del mensaje.
+                    </p>
+                </div>
+
+                <div id="private-ai-prompt-errors" class="private-ai-prompt__feedback private-ai-prompt__feedback--error" hidden></div>
+                <div id="private-ai-prompt-success" class="private-ai-prompt__feedback private-ai-prompt__feedback--success" hidden></div>
+
+                <div class="private-ai-prompt__actions">
+                    <button type="submit" class="private-btn private-btn--primary" id="private-ai-prompt-submit">
+                        Enviar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

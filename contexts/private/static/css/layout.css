@@ -47,7 +47,7 @@
         align-items: stretch;
     }
 
-    .private-page-header--with-actions .private-btn--primary {
+    .private-page-header--with-actions .private-page-header__actions .private-btn {
         width: 100%;
     }
 }
