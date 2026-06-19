@@ -130,7 +130,7 @@ const PrivateAiPrompt = {
                 this.submitButton.classList.add('is-loading');
             }
 
-            PrivateLoader.show('Enviando mensaje...');
+            PrivateLoader.show('Consultando IA...');
 
             try {
                 const formData = new FormData();

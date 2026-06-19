@@ -57,6 +57,7 @@ Antes de escribir código, debes explicar brevemente:
 * No introducir arquitectura innecesaria.
 * No crear servicios, managers o abstracciones hasta que exista una necesidad real.
 * No modificar archivos que no estén directamente relacionados con la tarea solicitada.
+* **Secretos y API keys:** siempre en `.env` y `os.environ` (ver regla `04-environment-secrets.mdc`). Nunca en código versionado.
 
 ## Estilo de código
 
