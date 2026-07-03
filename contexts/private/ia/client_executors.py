@@ -2,22 +2,36 @@ import json
 
 from core.clients.models import Client
 
-from contexts.private.clients.queries import get_filtered_clients
-from contexts.private.ia.validation import normalize_phone_digits, validate_phone_for_delete
+from contexts.private.clients.queries import (
+    apply_client_payload,
+    get_filtered_clients,
+    serialize_client_form,
+)
+from contexts.private.clients.validation import (
+    CLIENT_FIELD_LABELS,
+    REQUIRED_CLIENT_FIELDS,
+    validate_client_payload,
+)
+from contexts.private.ia.validation import user_provided_client_id, validate_client_id
 
 
-def _find_clients_by_phone(phone):
-    normalized_phone, phone_error = validate_phone_for_delete(phone)
-    if phone_error:
-        return None, phone_error
+def _require_user_provided_client_id(client_id, user_messages_text):
+    is_provided, error = user_provided_client_id(user_messages_text, client_id)
+    if not is_provided:
+        return error
+    return None
 
-    matches = [
-        client
-        for client in Client.objects.exclude(phone='')
-        if normalize_phone_digits(client.phone) == normalized_phone
-    ]
 
-    return matches, None
+def _find_client_by_id(client_id):
+    parsed_id, lookup_error = validate_client_id(client_id)
+    if lookup_error:
+        return None, lookup_error
+
+    client = Client.objects.filter(pk=parsed_id).first()
+    if not client:
+        return None, f'No se encontró ningún cliente con ID {parsed_id}.'
+
+    return client, None
 
 
 def _serialize_client_summary(client):
@@ -51,6 +65,7 @@ def execute_search_clients(arguments):
         'shown_count': len(clients),
         'clients': [
             {
+                'id': client.id,
                 'name': client.name,
                 'company_name': client.company_name,
                 'email': client.email,
@@ -63,33 +78,120 @@ def execute_search_clients(arguments):
     }
 
 
-def execute_delete_client(arguments):
-    phone = str(arguments.get('phone', '')).strip()
-    confirmed = bool(arguments.get('confirmed', False))
+def _extract_client_updates(arguments):
+    updates = {}
 
-    matches, lookup_error = _find_clients_by_phone(phone)
+    for field in REQUIRED_CLIENT_FIELDS:
+        if field in arguments and arguments[field] is not None:
+            value = str(arguments[field]).strip()
+            if value:
+                updates[field] = value
+
+    return updates
+
+
+def _build_client_changes(current_data, merged_data):
+    changes = {}
+
+    for field in REQUIRED_CLIENT_FIELDS:
+        old_value = current_data.get(field, '')
+        new_value = merged_data.get(field, '')
+        if old_value != new_value:
+            changes[field] = {
+                'label': CLIENT_FIELD_LABELS[field],
+                'from': old_value,
+                'to': new_value,
+            }
+
+    return changes
+
+
+def execute_update_client(arguments, user_messages_text=''):
+    client_id = arguments.get('client_id')
+    confirmed = bool(arguments.get('confirmed', False))
+    updates = _extract_client_updates(arguments)
+
+    id_error = _require_user_provided_client_id(client_id, user_messages_text)
+    if id_error:
+        return {
+            'success': False,
+            'error': id_error,
+        }
+
+    if not updates:
+        return {
+            'success': False,
+            'error': 'Debes indicar al menos un campo para actualizar.',
+        }
+
+    client, lookup_error = _find_client_by_id(client_id)
     if lookup_error:
         return {
             'success': False,
             'error': lookup_error,
         }
 
-    if not matches:
+    current_data = serialize_client_form(client)
+    merged_data = {field: current_data[field] for field in REQUIRED_CLIENT_FIELDS}
+    merged_data.update(updates)
+
+    errors = validate_client_payload(merged_data)
+    if errors:
         return {
             'success': False,
-            'error': 'No se encontró ningún cliente con ese teléfono.',
+            'error': errors[0],
         }
 
-    if len(matches) > 1:
+    changes = _build_client_changes(current_data, merged_data)
+    if not changes:
         return {
             'success': False,
-            'error': (
-                'Hay varios clientes con ese teléfono. '
-                'No se puede eliminar automáticamente.'
+            'error': 'Los valores indicados ya coinciden con la ficha del cliente.',
+        }
+
+    if not confirmed:
+        return {
+            'success': False,
+            'requires_confirmation': True,
+            'client': _serialize_client_summary(client),
+            'changes': changes,
+            'message': (
+                f'Se ha localizado al cliente "{client.name}" con ID {client.id}. '
+                'Resume los cambios y pide confirmación explícita antes de actualizar.'
             ),
         }
 
-    client = matches[0]
+    apply_client_payload(client, merged_data)
+    updated_client = serialize_client_form(client)
+
+    return {
+        'success': True,
+        'updated_client': updated_client,
+        'changes': changes,
+        'message': (
+            f'Cliente "{updated_client["name"]}" (ID {updated_client["id"]}) '
+            'actualizado correctamente.'
+        ),
+    }
+
+
+def execute_delete_client(arguments, user_messages_text=''):
+    client_id = arguments.get('client_id')
+    confirmed = bool(arguments.get('confirmed', False))
+
+    id_error = _require_user_provided_client_id(client_id, user_messages_text)
+    if id_error:
+        return {
+            'success': False,
+            'error': id_error,
+        }
+
+    client, lookup_error = _find_client_by_id(client_id)
+    if lookup_error:
+        return {
+            'success': False,
+            'error': lookup_error,
+        }
 
     if not confirmed:
         return {
@@ -97,7 +199,7 @@ def execute_delete_client(arguments):
             'requires_confirmation': True,
             'client': _serialize_client_summary(client),
             'message': (
-                f'Se ha localizado al cliente "{client.name}" con teléfono {client.phone}. '
+                f'Se ha localizado al cliente "{client.name}" con ID {client.id}. '
                 'Pide confirmación explícita antes de eliminar.'
             ),
         }
@@ -109,19 +211,20 @@ def execute_delete_client(arguments):
         'success': True,
         'deleted_client': deleted_client,
         'message': (
-            f'Cliente "{deleted_client["name"]}" eliminado correctamente '
-            f'con teléfono {deleted_client["phone"]}.'
+            f'Cliente "{deleted_client["name"]}" (ID {deleted_client["id"]}) '
+            'eliminado correctamente.'
         ),
     }
 
 
 CLIENT_TOOL_EXECUTORS = {
     'search_clients': execute_search_clients,
+    'update_client': execute_update_client,
     'delete_client': execute_delete_client,
 }
 
 
-def execute_client_tool(tool_name, arguments):
+def execute_client_tool(tool_name, arguments, user_messages_text=''):
     executor = CLIENT_TOOL_EXECUTORS.get(tool_name)
     if not executor:
         raise ValueError(f'Herramienta no soportada: {tool_name}')
@@ -129,4 +232,9 @@ def execute_client_tool(tool_name, arguments):
     if isinstance(arguments, str):
         arguments = json.loads(arguments or '{}')
 
-    return executor(arguments or {})
+    arguments = arguments or {}
+
+    if tool_name in ('update_client', 'delete_client'):
+        return executor(arguments, user_messages_text=user_messages_text)
+
+    return executor(arguments)

@@ -61,7 +61,7 @@
                 id="client-search"
                 type="search"
                 name="q"
-                placeholder="Nombre, email, teléfono o empresa..."
+                placeholder="Nombre, email, teléfono, empresa o ID..."
             >
         </div>
         <div class="private-search__field private-search__field--date">
@@ -84,6 +84,12 @@
             <table class="private-table" id="clients-table">
                 <thead>
                     <tr>
+                        <th data-sort-field="id">
+                            <button type="button" class="private-table__sort">
+                                <span>ID</span>
+                                <span class="private-table__sort-icon" aria-hidden="true"></span>
+                            </button>
+                        </th>
                         <th data-sort-field="name">
                             <button type="button" class="private-table__sort private-table__sort--active private-table__sort--asc">
                                 <span>Nombre</span>

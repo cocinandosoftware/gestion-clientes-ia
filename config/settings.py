@@ -160,3 +160,10 @@ LOGOUT_REDIRECT_URL = 'home'
 
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
 GROQ_MODEL = os.environ.get('GROQ_MODEL', 'llama-3.3-70b-versatile')
+
+_ia_prince_raw = os.environ.get('IA_PRINCE_ENABLED', '')
+IA_PRINCE_ENABLED = (
+    _ia_prince_raw.lower() in ('true', '1', 'yes')
+    if _ia_prince_raw
+    else DEBUG
+)

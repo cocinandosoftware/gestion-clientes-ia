@@ -3,6 +3,7 @@ MAX_PAGE_SIZE = 100
 
 
 CLIENT_SORT_FIELDS = {
+    'id': 'id',
     'name': 'name',
     'company_name': 'company_name',
     'email': 'email',

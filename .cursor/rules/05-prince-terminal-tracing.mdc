@@ -1,0 +1,78 @@
+---
+alwaysApply: true
+---
+
+# Prince: trazado de ejecución en terminal
+
+## Principio
+
+Para seguir el flujo de ejecución de forma didáctica (peticiones, llamadas a Groq, herramientas, validaciones, respuestas), el proyecto usa **Prince** (`contexts/private/ia/prince.py`).
+
+Prince escribe pasos numerados **solo en la terminal del servidor** (`runserver`). Nunca en la interfaz de usuario.
+
+## Reglas obligatorias
+
+1. **Usar Prince**, no `print()` sueltos, para documentar el flujo de ejecución en backend.
+2. **No mostrar** pasos de Prince en templates, JavaScript, `JsonResponse` ni mensajes al usuario.
+3. **No enviar** `trace`, `steps` ni equivalentes al frontend.
+4. El usuario del asistente IA solo ve la **respuesta final en lenguaje natural**.
+5. Prince es para **desarrollo y formación**; en producción desactivarlo con `IA_PRINCE_ENABLED=False`.
+
+## Activación
+
+| Archivo | Uso |
+|---------|-----|
+| `.env` | `IA_PRINCE_ENABLED=True` en local |
+| `.env.example` | Plantilla con `IA_PRINCE_ENABLED=True` |
+| `config/settings.py` | `IA_PRINCE_ENABLED` (por defecto sigue a `DEBUG` si no se define) |
+
+## Uso correcto
+
+```python
+from contexts.private.ia.prince import PrinceTrace
+
+def mi_vista_o_servicio(request):
+    prince = PrinceTrace.from_settings()
+    prince.step('Mensaje recibido en la API', 'Descripción breve del contexto')
+
+    # Pasar prince a funciones hijas que participen en el flujo
+    resultado = process_clients_prompt(message, history, prince=prince)
+
+    prince.step('Respuesta preparada', resultado['intent'])
+    return JsonResponse({'success': True, 'message': resultado['message']})
+```
+
+Dentro de una función del flujo:
+
+```python
+def process_clients_prompt(user_message, conversation_history=None, prince=None):
+    prince = prince or PrinceTrace()
+    prince.step('Enviando petición a Groq', f'Modelo {settings.GROQ_MODEL}')
+    # ...
+```
+
+Salida esperada en terminal:
+
+```text
+[Prince] Paso 1: Mensaje recibido en la API — "Actualiza el cliente..."
+[Prince] Paso 2: Enviando petición a Groq — Modelo llama-3.3-70b-versatile
+```
+
+## Prohibido
+
+```python
+# ❌ print suelto para seguir el flujo
+print('ejecutando update_client', arguments)
+
+# ❌ exponer trace al usuario
+return JsonResponse({'success': True, 'message': reply, 'trace': prince.as_list()})
+
+# ❌ panel HTML/JS con pasos de Prince
+```
+
+## Al añadir nuevo flujo (IA, APIs, procesos multi-paso)
+
+1. Crear o reutilizar una instancia `PrinceTrace.from_settings()` en el punto de entrada.
+2. Añadir `prince.step('Título claro', 'detalle opcional')` en cada fase relevante.
+3. Propagar `prince` por parámetro a funciones del mismo flujo.
+4. Confirmar que la respuesta al cliente **no incluye** datos de trazado.

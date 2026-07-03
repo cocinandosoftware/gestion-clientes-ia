@@ -1,4 +1,5 @@
 import json
+import re
 
 AI_PROMPT_MAX_LENGTH = 2000
 
@@ -14,25 +15,47 @@ def validate_ai_prompt(message):
     return errors
 
 
-def normalize_phone_digits(value):
-    return ''.join(character for character in str(value or '') if character.isdigit())
+def validate_client_id(client_id):
+    client_id_text = str(client_id or '').strip()
+
+    if not client_id_text:
+        return None, 'Debes indicar el ID del cliente.'
+
+    try:
+        parsed_id = int(client_id_text)
+    except (TypeError, ValueError):
+        return None, 'El ID del cliente no es válido.'
+
+    if parsed_id <= 0:
+        return None, 'El ID del cliente no es válido.'
+
+    return parsed_id, None
 
 
-def validate_phone_for_delete(phone):
-    phone_text = str(phone or '').strip()
+def build_user_messages_text(user_message, conversation_history=None):
+    parts = []
 
-    if not phone_text:
-        return None, 'Debes indicar un teléfono válido para eliminar un cliente.'
+    for entry in conversation_history or []:
+        if entry.get('role') == 'user':
+            parts.append(str(entry.get('content', '')).strip())
 
-    digits = normalize_phone_digits(phone_text)
+    parts.append(str(user_message or '').strip())
+    return '\n'.join(part for part in parts if part)
 
-    if len(digits) < 9:
-        return None, 'El teléfono indicado no es válido. Debe tener al menos 9 dígitos.'
 
-    if len(digits) > 15:
-        return None, 'El teléfono indicado no es válido.'
+def user_provided_client_id(user_messages_text, client_id):
+    parsed_id, error = validate_client_id(client_id)
+    if error:
+        return False, error
 
-    return digits, None
+    pattern = re.compile(rf'(?<!\d){parsed_id}(?!\d)')
+    if pattern.search(user_messages_text or ''):
+        return True, None
+
+    return False, (
+        'Debes indicar el ID del cliente en tu mensaje. '
+        'Consúltalo en el listado y escríbelo explícitamente.'
+    )
 
 
 AI_HISTORY_MAX_MESSAGES = 20

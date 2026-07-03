@@ -28,13 +28,18 @@ def get_filtered_clients(
     query_filter = Q()
 
     if search_query:
-        query_filter &= (
+        search_filter = (
             Q(name__icontains=search_query)
             | Q(company_name__icontains=search_query)
             | Q(email__icontains=search_query)
             | Q(phone__icontains=search_query)
             | Q(city__icontains=search_query)
         )
+
+        if search_query.isdigit():
+            search_filter |= Q(id=int(search_query))
+
+        query_filter &= search_filter
 
     if date_from:
         query_filter &= Q(date__gte=date_from)

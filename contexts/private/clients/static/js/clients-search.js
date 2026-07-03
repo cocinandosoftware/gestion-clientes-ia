@@ -42,6 +42,7 @@ function renderCell(value, label) {
 function buildClientRow(client) {
     return `
         <tr>
+            <td data-label="ID">${escapeHtml(String(client.id))}</td>
             <td data-label="Nombre">${escapeHtml(client.name)}</td>
             ${renderCell(client.company_name, 'Razón social')}
             ${renderCell(client.email, 'Email')}
