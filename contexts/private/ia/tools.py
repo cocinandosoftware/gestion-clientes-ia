@@ -35,6 +35,81 @@ CLIENT_TOOLS = [
     {
         'type': 'function',
         'function': {
+            'name': 'create_client',
+            'description': (
+                'Crea un cliente nuevo en la base de datos. '
+                'Requiere todos los campos obligatorios de la ficha. '
+                'El teléfono y el email deben ser únicos.'
+            ),
+            'parameters': {
+                'type': 'object',
+                'properties': {
+                    'confirmed': {
+                        'type': 'boolean',
+                        'description': (
+                            'Debe ser true solo si el usuario ha confirmado explícitamente '
+                            'la creación tras ver un resumen de los datos del nuevo cliente.'
+                        ),
+                    },
+                    'date': {
+                        'type': 'string',
+                        'description': 'Fecha de alta del cliente (YYYY-MM-DD).',
+                    },
+                    'name': {
+                        'type': 'string',
+                        'description': 'Nombre del cliente.',
+                    },
+                    'company_name': {
+                        'type': 'string',
+                        'description': 'Razón social del cliente.',
+                    },
+                    'phone': {
+                        'type': 'string',
+                        'description': 'Teléfono del cliente. Debe ser único en el sistema.',
+                    },
+                    'email': {
+                        'type': 'string',
+                        'description': 'Email del cliente. Debe ser único en el sistema.',
+                    },
+                    'address_line': {
+                        'type': 'string',
+                        'description': 'Dirección del cliente.',
+                    },
+                    'city': {
+                        'type': 'string',
+                        'description': 'Ciudad del cliente.',
+                    },
+                    'postal_code': {
+                        'type': 'string',
+                        'description': 'Código postal del cliente.',
+                    },
+                    'province': {
+                        'type': 'string',
+                        'description': 'Provincia del cliente.',
+                    },
+                    'notes': {
+                        'type': 'string',
+                        'description': 'Notas del cliente.',
+                    },
+                },
+                'required': [
+                    'date',
+                    'name',
+                    'company_name',
+                    'phone',
+                    'email',
+                    'address_line',
+                    'city',
+                    'postal_code',
+                    'province',
+                    'notes',
+                ],
+            },
+        },
+    },
+    {
+        'type': 'function',
+        'function': {
             'name': 'update_client',
             'description': (
                 'Actualiza uno o varios campos de la ficha de un cliente. '
@@ -136,11 +211,16 @@ CLIENT_TOOLS = [
 
 CLIENT_SYSTEM_PROMPT = """Eres un asistente del sistema de gestión de clientes.
 
-Tienes acceso a herramientas para consultar, actualizar y eliminar clientes registrados.
+Tienes acceso a herramientas para consultar, crear, actualizar y eliminar clientes registrados.
 
 Reglas:
 - Si el usuario pregunta sobre clientes (buscar, listar, consultar quién hay, filtrar por ciudad, etc.), usa search_clients.
 - search_clients es solo para consulta. Muestra el ID de cada cliente para que el usuario lo vea en el listado, pero no lo uses tú para actualizar ni eliminar.
+- Si el usuario pide dar de alta o crear un cliente nuevo, usa create_client.
+- create_client exige todos los campos obligatorios de la ficha. Si falta alguno, pídeselo al usuario antes de llamar a la herramienta.
+- El teléfono y el email no pueden coincidir con los de un cliente ya existente. Si la herramienta devuelve error por duplicado, explícalo al usuario.
+- Para crear: primero llama a create_client con todos los datos y confirmed=false. Resume los datos y pide confirmación explícita.
+- Solo vuelve a llamar a create_client con confirmed=true si el usuario responde claramente que sí, confirmo o similar.
 - Para actualizar o eliminar, el usuario DEBE escribir el ID en su mensaje. El ID lo proporciona el usuario, no el asistente.
 - Nunca deduzcas, busques ni infieras el ID a partir del teléfono, nombre, email u otros datos.
 - Nunca encadenes search_clients con update_client ni delete_client en la misma petición.

@@ -99,3 +99,18 @@ def apply_client_payload(client, data):
     client.province = data['province']
     client.notes = data['notes']
     client.save()
+
+
+def create_client_from_payload(data):
+    return Client.objects.create(
+        date=datetime.strptime(data['date'], '%Y-%m-%d').date(),
+        name=data['name'],
+        company_name=data['company_name'],
+        phone=data['phone'],
+        email=data['email'],
+        address_line=data['address_line'],
+        city=data['city'],
+        postal_code=data['postal_code'],
+        province=data['province'],
+        notes=data['notes'],
+    )

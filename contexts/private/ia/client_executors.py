@@ -4,6 +4,7 @@ from core.clients.models import Client
 
 from contexts.private.clients.queries import (
     apply_client_payload,
+    create_client_from_payload,
     get_filtered_clients,
     serialize_client_form,
 )
@@ -11,6 +12,7 @@ from contexts.private.clients.validation import (
     CLIENT_FIELD_LABELS,
     REQUIRED_CLIENT_FIELDS,
     validate_client_payload,
+    validate_client_unique_contact,
 )
 from contexts.private.ia.validation import user_provided_client_id, validate_client_id
 
@@ -78,6 +80,18 @@ def execute_search_clients(arguments):
     }
 
 
+def _extract_client_payload(arguments):
+    payload = {}
+
+    for field in REQUIRED_CLIENT_FIELDS:
+        if field in arguments and arguments[field] is not None:
+            payload[field] = str(arguments[field]).strip()
+        else:
+            payload[field] = ''
+
+    return payload
+
+
 def _extract_client_updates(arguments):
     updates = {}
 
@@ -140,6 +154,16 @@ def execute_update_client(arguments, user_messages_text=''):
         return {
             'success': False,
             'error': errors[0],
+        }
+
+    unique_errors = validate_client_unique_contact(
+        merged_data,
+        exclude_client_id=client.id,
+    )
+    if unique_errors:
+        return {
+            'success': False,
+            'error': unique_errors[0],
         }
 
     changes = _build_client_changes(current_data, merged_data)
@@ -217,8 +241,56 @@ def execute_delete_client(arguments, user_messages_text=''):
     }
 
 
+def execute_create_client(arguments):
+    confirmed = bool(arguments.get('confirmed', False))
+    payload = _extract_client_payload(arguments)
+
+    errors = validate_client_payload(payload)
+    if errors:
+        return {
+            'success': False,
+            'error': errors[0],
+        }
+
+    unique_errors = validate_client_unique_contact(payload)
+    if unique_errors:
+        return {
+            'success': False,
+            'error': unique_errors[0],
+        }
+
+    preview = {
+        field: payload[field]
+        for field in REQUIRED_CLIENT_FIELDS
+    }
+
+    if not confirmed:
+        return {
+            'success': False,
+            'requires_confirmation': True,
+            'client_preview': preview,
+            'message': (
+                'Resume los datos del nuevo cliente y pide confirmación explícita '
+                'antes de crearlo.'
+            ),
+        }
+
+    client = create_client_from_payload(payload)
+    created_client = serialize_client_form(client)
+
+    return {
+        'success': True,
+        'created_client': created_client,
+        'message': (
+            f'Cliente "{created_client["name"]}" (ID {created_client["id"]}) '
+            'creado correctamente.'
+        ),
+    }
+
+
 CLIENT_TOOL_EXECUTORS = {
     'search_clients': execute_search_clients,
+    'create_client': execute_create_client,
     'update_client': execute_update_client,
     'delete_client': execute_delete_client,
 }

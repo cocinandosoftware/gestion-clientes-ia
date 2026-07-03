@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from core.clients.models import Client
+
 CLIENT_FIELD_LABELS = {
     'date': 'fecha',
     'name': 'nombre',
@@ -34,5 +36,27 @@ def validate_client_payload(data):
         datetime.strptime(data.get('date', '').strip(), '%Y-%m-%d')
     except ValueError:
         errors.append('La fecha no es válida.')
+
+    return errors
+
+
+def validate_client_unique_contact(data, exclude_client_id=None):
+    errors = []
+    phone = str(data.get('phone', '')).strip()
+    email = str(data.get('email', '')).strip()
+
+    if phone:
+        phone_queryset = Client.objects.filter(phone=phone)
+        if exclude_client_id:
+            phone_queryset = phone_queryset.exclude(pk=exclude_client_id)
+        if phone_queryset.exists():
+            errors.append('Ya existe un cliente con ese teléfono.')
+
+    if email:
+        email_queryset = Client.objects.filter(email__iexact=email)
+        if exclude_client_id:
+            email_queryset = email_queryset.exclude(pk=exclude_client_id)
+        if email_queryset.exists():
+            errors.append('Ya existe un cliente con ese email.')
 
     return errors
