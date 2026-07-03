@@ -6,7 +6,7 @@ from groq import Groq
 from groq import AuthenticationError, APIConnectionError, RateLimitError
 
 from contexts.private.ia.client_executors import CLIENT_TOOL_EXECUTORS, execute_client_tool
-from contexts.private.ia.prince import PrinceTrace
+# from contexts.private.ia.prince import PrinceTrace  # Prince desactivado
 from contexts.private.ia.tools import CLIENT_SYSTEM_PROMPT, CLIENT_TOOLS
 from contexts.private.ia.validation import build_user_messages_text
 
@@ -130,19 +130,19 @@ def _parse_function_call_from_content(content):
 
 
 def _append_tool_result(messages, tool_call_id, tool_name, arguments, prince, user_messages_text):
-    prince.step(
-        f'Ejecutando herramienta "{tool_name}"',
-        _truncate_detail(arguments),
-    )
+    # prince.step(
+    #     f'Ejecutando herramienta "{tool_name}"',
+    #     _truncate_detail(arguments),
+    # )
     tool_result = execute_client_tool(
         tool_name,
         arguments,
         user_messages_text=user_messages_text,
     )
-    prince.step(
-        f'Resultado de "{tool_name}"',
-        _describe_tool_result(tool_result),
-    )
+    # prince.step(
+    #     f'Resultado de "{tool_name}"',
+    #     _describe_tool_result(tool_result),
+    # )
     messages.append({
         'role': 'tool',
         'tool_call_id': tool_call_id,
@@ -159,10 +159,10 @@ def _execute_parsed_function_call(
     prince,
     user_messages_text,
 ):
-    prince.step(
-        f'Función detectada en texto: "{tool_name}"',
-        'Se convertirá en una llamada a herramienta real',
-    )
+    # prince.step(
+    #     f'Función detectada en texto: "{tool_name}"',
+    #     'Se convertirá en una llamada a herramienta real',
+    # )
     messages.append({
         'role': 'assistant',
         'content': '',
@@ -186,19 +186,19 @@ def _execute_parsed_function_call(
 
 
 def _summarize_tool_results(client, messages, intent, prince):
-    prince.step(
-        'Generando resumen en lenguaje natural',
-        'Última llamada a Groq sin herramientas',
-    )
+    # prince.step(
+    #     'Generando resumen en lenguaje natural',
+    #     'Última llamada a Groq sin herramientas',
+    # )
     summary_completion = _create_completion(client, messages, prince, tools=None)
     reply = summary_completion.choices[0].message.content
     if not reply:
         raise GroqChatError('Groq devolvió una respuesta vacía tras ejecutar la herramienta.')
 
-    prince.step(
-        'Resumen generado por Groq',
-        _truncate_detail(reply),
-    )
+    # prince.step(
+    #     'Resumen generado por Groq',
+    #     _truncate_detail(reply),
+    # )
 
     return {
         'intent': intent,
@@ -207,7 +207,7 @@ def _summarize_tool_results(client, messages, intent, prince):
 
 
 def process_clients_prompt(user_message, conversation_history=None, prince=None):
-    prince = prince or PrinceTrace()
+    # prince = prince or PrinceTrace()  # Prince desactivado
     client = _get_groq_client()
 
     messages = [{'role': 'system', 'content': CLIENT_SYSTEM_PROMPT}]
@@ -221,30 +221,30 @@ def process_clients_prompt(user_message, conversation_history=None, prince=None)
     messages.append({'role': 'user', 'content': user_message})
     user_messages_text = build_user_messages_text(user_message, conversation_history)
 
-    prince.step(
-        'Conversación preparada para Groq',
-        (
-            f'{len(conversation_history or [])} mensajes de historial + '
-            f'mensaje actual ({len(user_message)} caracteres)'
-        ),
-    )
+    # prince.step(
+    #     'Conversación preparada para Groq',
+    #     (
+    #         f'{len(conversation_history or [])} mensajes de historial + '
+    #         f'mensaje actual ({len(user_message)} caracteres)'
+    #     ),
+    # )
 
     intent = 'generic'
     executed_tools = False
 
     for round_index in range(MAX_TOOL_ROUNDS):
         round_number = round_index + 1
-        prince.step(
-            f'Enviando petición a Groq (ronda {round_number})',
-            f'Modelo {settings.GROQ_MODEL} con herramientas activas',
-        )
+        # prince.step(
+        #     f'Enviando petición a Groq (ronda {round_number})',
+        #     f'Modelo {settings.GROQ_MODEL} con herramientas activas',
+        # )
         completion = _create_completion(client, messages, prince, tools=CLIENT_TOOLS)
         assistant_message = completion.choices[0].message
         tool_calls = assistant_message.tool_calls or []
-        prince.step(
-            f'Respuesta recibida de Groq (ronda {round_number})',
-            _describe_groq_response(assistant_message, tool_calls),
-        )
+        # prince.step(
+        #     f'Respuesta recibida de Groq (ronda {round_number})',
+        #     _describe_groq_response(assistant_message, tool_calls),
+        # )
 
         if not tool_calls:
             parsed_call = _parse_function_call_from_content(assistant_message.content)
@@ -265,7 +265,7 @@ def process_clients_prompt(user_message, conversation_history=None, prince=None)
             if not reply:
                 if executed_tools:
                     result = _summarize_tool_results(client, messages, intent, prince)
-                    prince.step('Proceso finalizado', f'Intent detectado: {result["intent"]}')
+                    # prince.step('Proceso finalizado', f'Intent detectado: {result["intent"]}')
                     return result
                 raise GroqChatError('Groq devolvió una respuesta vacía.')
 
@@ -274,10 +274,10 @@ def process_clients_prompt(user_message, conversation_history=None, prince=None)
                     'Groq devolvió una llamada a función sin procesar. Inténtalo de nuevo.'
                 )
 
-            prince.step(
-                'Respuesta final lista para el usuario',
-                _truncate_detail(reply),
-            )
+            # prince.step(
+            #     'Respuesta final lista para el usuario',
+            #     _truncate_detail(reply),
+            # )
             return {
                 'intent': intent,
                 'message': reply.strip(),
@@ -298,7 +298,7 @@ def process_clients_prompt(user_message, conversation_history=None, prince=None)
 
     if executed_tools:
         result = _summarize_tool_results(client, messages, intent, prince)
-        prince.step('Proceso finalizado', f'Intent detectado: {result["intent"]}')
+        # prince.step('Proceso finalizado', f'Intent detectado: {result["intent"]}')
         return result
 
     raise GroqChatError('Groq no pudo completar la petición con las herramientas disponibles.')
