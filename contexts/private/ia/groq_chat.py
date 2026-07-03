@@ -129,7 +129,7 @@ def _parse_function_call_from_content(content):
     return tool_name, match.group(2)
 
 
-def _append_tool_result(messages, tool_call_id, tool_name, arguments, prince, user_messages_text):
+def _append_tool_result(messages, tool_call_id, tool_name, arguments, prince, user_messages_text, session=None):
     # prince.step(
     #     f'Ejecutando herramienta "{tool_name}"',
     #     _truncate_detail(arguments),
@@ -138,6 +138,7 @@ def _append_tool_result(messages, tool_call_id, tool_name, arguments, prince, us
         tool_name,
         arguments,
         user_messages_text=user_messages_text,
+        session=session,
     )
     # prince.step(
     #     f'Resultado de "{tool_name}"',
@@ -158,6 +159,7 @@ def _execute_parsed_function_call(
     tool_call_id,
     prince,
     user_messages_text,
+    session=None,
 ):
     # prince.step(
     #     f'Función detectada en texto: "{tool_name}"',
@@ -182,6 +184,7 @@ def _execute_parsed_function_call(
         arguments,
         prince,
         user_messages_text,
+        session=session,
     )
 
 
@@ -206,7 +209,7 @@ def _summarize_tool_results(client, messages, intent, prince):
     }
 
 
-def process_clients_prompt(user_message, conversation_history=None, prince=None):
+def process_clients_prompt(user_message, conversation_history=None, prince=None, session=None):
     # prince = prince or PrinceTrace()  # Prince desactivado
     client = _get_groq_client()
 
@@ -257,6 +260,7 @@ def process_clients_prompt(user_message, conversation_history=None, prince=None)
                     f'call_parsed_{round_index}',
                     prince,
                     user_messages_text,
+                    session=session,
                 )
                 executed_tools = True
                 continue
@@ -294,6 +298,7 @@ def process_clients_prompt(user_message, conversation_history=None, prince=None)
                 tool_call.function.arguments,
                 prince,
                 user_messages_text,
+                session=session,
             )
 
     if executed_tools:

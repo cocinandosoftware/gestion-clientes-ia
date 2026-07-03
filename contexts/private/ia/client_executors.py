@@ -11,8 +11,15 @@ from contexts.private.clients.queries import (
 from contexts.private.clients.validation import (
     CLIENT_FIELD_LABELS,
     REQUIRED_CLIENT_FIELDS,
+    get_collected_client_fields,
+    get_missing_client_fields,
     validate_client_payload,
     validate_client_unique_contact,
+)
+from contexts.private.ia.client_draft import (
+    clear_client_create_draft,
+    get_client_create_draft,
+    merge_client_create_draft,
 )
 from contexts.private.ia.validation import user_provided_client_id, validate_client_id
 
@@ -80,16 +87,16 @@ def execute_search_clients(arguments):
     }
 
 
-def _extract_client_payload(arguments):
-    payload = {}
+def _extract_client_partial(arguments):
+    partial = {}
 
     for field in REQUIRED_CLIENT_FIELDS:
         if field in arguments and arguments[field] is not None:
-            payload[field] = str(arguments[field]).strip()
-        else:
-            payload[field] = ''
+            value = str(arguments[field]).strip()
+            if value:
+                partial[field] = value
 
-    return payload
+    return partial
 
 
 def _extract_client_updates(arguments):
@@ -241,41 +248,63 @@ def execute_delete_client(arguments, user_messages_text=''):
     }
 
 
-def execute_create_client(arguments):
+def execute_create_client(arguments, session=None):
     confirmed = bool(arguments.get('confirmed', False))
-    payload = _extract_client_payload(arguments)
+    partial = _extract_client_partial(arguments)
 
-    errors = validate_client_payload(payload)
+    if partial:
+        draft = merge_client_create_draft(session, partial)
+    else:
+        draft = get_client_create_draft(session)
+
+    missing_fields = get_missing_client_fields(draft)
+    collected_fields = get_collected_client_fields(draft)
+
+    if missing_fields:
+        return {
+            'success': False,
+            'requires_more_data': True,
+            'missing_fields': missing_fields,
+            'missing_field_labels': [
+                CLIENT_FIELD_LABELS[field]
+                for field in missing_fields
+            ],
+            'collected_fields': collected_fields,
+            'message': (
+                'Resume los datos ya recogidos y pide solo los campos que faltan. '
+                'No pidas repetir los datos que ya constan en collected_fields.'
+            ),
+        }
+
+    errors = validate_client_payload(draft)
     if errors:
         return {
             'success': False,
             'error': errors[0],
+            'collected_fields': collected_fields,
         }
 
-    unique_errors = validate_client_unique_contact(payload)
+    unique_errors = validate_client_unique_contact(draft)
     if unique_errors:
         return {
             'success': False,
             'error': unique_errors[0],
+            'collected_fields': collected_fields,
         }
-
-    preview = {
-        field: payload[field]
-        for field in REQUIRED_CLIENT_FIELDS
-    }
 
     if not confirmed:
         return {
             'success': False,
             'requires_confirmation': True,
-            'client_preview': preview,
+            'client_preview': draft,
             'message': (
                 'Resume los datos del nuevo cliente y pide confirmación explícita '
-                'antes de crearlo.'
+                'antes de crearlo. No hace falta volver a enviar todos los campos.'
             ),
         }
 
-    client = create_client_from_payload(payload)
+    client = create_client_from_payload(draft)
+    clear_client_create_draft(session)
     created_client = serialize_client_form(client)
 
     return {
@@ -296,7 +325,7 @@ CLIENT_TOOL_EXECUTORS = {
 }
 
 
-def execute_client_tool(tool_name, arguments, user_messages_text=''):
+def execute_client_tool(tool_name, arguments, user_messages_text='', session=None):
     executor = CLIENT_TOOL_EXECUTORS.get(tool_name)
     if not executor:
         raise ValueError(f'Herramienta no soportada: {tool_name}')
@@ -308,5 +337,8 @@ def execute_client_tool(tool_name, arguments, user_messages_text=''):
 
     if tool_name in ('update_client', 'delete_client'):
         return executor(arguments, user_messages_text=user_messages_text)
+
+    if tool_name == 'create_client':
+        return executor(arguments, session=session)
 
     return executor(arguments)

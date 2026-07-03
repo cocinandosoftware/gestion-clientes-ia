@@ -38,7 +38,8 @@ CLIENT_TOOLS = [
             'name': 'create_client',
             'description': (
                 'Crea un cliente nuevo en la base de datos. '
-                'Requiere todos los campos obligatorios de la ficha. '
+                'Envía solo los campos que el usuario aporte en este mensaje; '
+                'el sistema acumula un borrador en sesión. '
                 'El teléfono y el email deben ser únicos.'
             ),
             'parameters': {
@@ -48,7 +49,7 @@ CLIENT_TOOLS = [
                         'type': 'boolean',
                         'description': (
                             'Debe ser true solo si el usuario ha confirmado explícitamente '
-                            'la creación tras ver un resumen de los datos del nuevo cliente.'
+                            'la creación tras ver el resumen del borrador completo.'
                         ),
                     },
                     'date': {
@@ -92,18 +93,7 @@ CLIENT_TOOLS = [
                         'description': 'Notas del cliente.',
                     },
                 },
-                'required': [
-                    'date',
-                    'name',
-                    'company_name',
-                    'phone',
-                    'email',
-                    'address_line',
-                    'city',
-                    'postal_code',
-                    'province',
-                    'notes',
-                ],
+                'required': [],
             },
         },
     },
@@ -217,10 +207,11 @@ Reglas:
 - Si el usuario pregunta sobre clientes (buscar, listar, consultar quién hay, filtrar por ciudad, etc.), usa search_clients.
 - search_clients es solo para consulta. Muestra el ID de cada cliente para que el usuario lo vea en el listado, pero no lo uses tú para actualizar ni eliminar.
 - Si el usuario pide dar de alta o crear un cliente nuevo, usa create_client.
-- create_client exige todos los campos obligatorios de la ficha. Si falta alguno, pídeselo al usuario antes de llamar a la herramienta.
+- create_client acumula un borrador en el servidor. En cada llamada envía solo los campos nuevos que el usuario haya indicado en su mensaje actual.
+- Si la herramienta devuelve requires_more_data, muestra collected_fields y pide únicamente missing_field_labels. Nunca pidas repetir datos ya recogidos.
+- Cuando el borrador esté completo, la herramienta devolverá requires_confirmation con client_preview. Resume los datos y pide confirmación explícita.
+- Para confirmar la creación, llama a create_client solo con confirmed=true. No hace falta reenviar todos los campos; el servidor usa el borrador guardado.
 - El teléfono y el email no pueden coincidir con los de un cliente ya existente. Si la herramienta devuelve error por duplicado, explícalo al usuario.
-- Para crear: primero llama a create_client con todos los datos y confirmed=false. Resume los datos y pide confirmación explícita.
-- Solo vuelve a llamar a create_client con confirmed=true si el usuario responde claramente que sí, confirmo o similar.
 - Para actualizar o eliminar, el usuario DEBE escribir el ID en su mensaje. El ID lo proporciona el usuario, no el asistente.
 - Nunca deduzcas, busques ni infieras el ID a partir del teléfono, nombre, email u otros datos.
 - Nunca encadenes search_clients con update_client ni delete_client en la misma petición.

@@ -18,6 +18,22 @@ CLIENT_FIELD_LABELS = {
 REQUIRED_CLIENT_FIELDS = tuple(CLIENT_FIELD_LABELS.keys())
 
 
+def get_missing_client_fields(data):
+    return [
+        field
+        for field in REQUIRED_CLIENT_FIELDS
+        if not str(data.get(field, '')).strip()
+    ]
+
+
+def get_collected_client_fields(data):
+    return {
+        field: str(data.get(field, '')).strip()
+        for field in REQUIRED_CLIENT_FIELDS
+        if str(data.get(field, '')).strip()
+    }
+
+
 def validate_client_payload(data):
     errors = []
 

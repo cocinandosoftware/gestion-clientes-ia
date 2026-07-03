@@ -34,7 +34,7 @@ def ai_clients_prompt_api_view(request):
     # )
 
     try:
-        result = process_clients_prompt(message, history)
+        result = process_clients_prompt(message, history, session=request.session)
     except GroqChatError as error:
         # prince.step('Error en la comunicación con Groq', str(error))
         return JsonResponse({
